@@ -1,37 +1,51 @@
 package Models;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class User {
-	private String pseudo;
-	private String password;
+	private String login;
+	private InetAddress address;
+	private Integer port;
 	private Boolean status;
 	
-	public User(String login, String pwd) {
+	public User(String l,Integer p) throws UnknownHostException {
 		// TODO Auto-generated constructor stub
-		this.pseudo=login;
-		this.password=pwd;		
+		this.login=l;
+		this.address = InetAddress.getLocalHost();
+		this.port = p;
 	}
-	
-	public void Set_Pseudo(String p) {
-		this.pseudo=p;
+
+	public String getLogin() {
+		return login;
 	}
-	
-	public void Set_Password(String p) {
-		this.password=p;
+
+	public void setLogin(String login) {
+		this.login = login;
 	}
 
 	public void Set_Status(Boolean s) {
 		this.status=s;
 	}
-	
-	public String Get_Pseudo() {
-		return pseudo;
-	}
-	
-	public String Get_Password() {
-		return password;
-	}
+
 	
 	public Boolean Get_Status() {
 		return status;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public InetAddress getAddress() {
+		return address;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
 	}
 }

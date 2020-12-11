@@ -5,9 +5,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class TCPConnect {
+public class TCPConnect extends Thread{
     //client TCP qui initie une communication sur demande pour envoyer un message à un autre utilisateur
-    private static InetAddress senderAddress;
+   private static InetAddress senderAddress;
     private InetAddress receiverAddress;
     private static Integer senderPort;
     private static Integer receiverPort;
