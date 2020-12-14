@@ -37,12 +37,15 @@ class InfoMachine {
 public class UDPConnect extends Thread {
     private String login;
     private Integer port;
+    //port utilisé par tous les serveurs UDP pour écouter le broadcast
     private  InetAddress address;
     //private Hashtable<String, InetAddress> connectedUsers = new Hashtable();
     private Map<String,InfoMachine> connectedUsers = new HashMap<>();
-    private BroadcastUDP br = new BroadcastUDP();
-    private DatagramSocket socket;
+    //private BroadcastUDP br = new BroadcastUDP();
+    private DatagramSocket socket1; //envoi broadcast
+    private DatagramSocket socket2; //réception broadcast
     private byte[] buffer;
+    private Integer broadcastPort = 6666;
 
     public UDPConnect(User user){
         this.login = user.getLogin();
@@ -50,7 +53,7 @@ public class UDPConnect extends Thread {
         this.address = user.getAddress();
 
         try {
-            socket = new DatagramSocket(this.port);
+            socket1 = new DatagramSocket(this.port);
             buffer = new byte[256];
         } catch (SocketException e) {
             e.printStackTrace();
@@ -67,7 +70,7 @@ public class UDPConnect extends Thread {
 
     public void sendLogin(InetAddress ipdest, Integer portdest) throws IOException {
         DatagramPacket message = new DatagramPacket(getLogin().getBytes(StandardCharsets.UTF_8),getLogin().length(),ipdest,portdest);
-        socket.send(message);
+        socket1.send(message);
     }
 
     public InetAddress getBroadcastAddress() throws SocketException {
@@ -90,11 +93,18 @@ public class UDPConnect extends Thread {
         return broadcastAddress;
     }
 
+
     public void sendMessageBroadcast(String message) throws IOException {
         try {
                 //envoi d'un message en broadcast pour connaitre les users connectés
-                br.broadcast(message,getBroadcastAddress() );
-                //remplissage de la table avec les users ayant répondu
+                //br.broadcast(message,getBroadcastAddress() );
+            this.socket1.setBroadcast(true);
+
+            byte[] buffer = message.getBytes();
+
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, getBroadcastAddress(),this.port);
+            socket1.send(packet);
+            System.out.println("OK");
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -109,18 +119,22 @@ public class UDPConnect extends Thread {
         while(true) {
             DatagramPacket in = new DatagramPacket(buffer,buffer.length);
             try {
-                socket.receive(in);
+                //socket2 = new DatagramSocket(this.broadcastPort);
+                socket1.receive(in);
                 InetAddress client = in.getAddress();
                 Integer clientPort = in.getPort();
                 // le message doit contenir deux éléments (le but du message et le login de l'envoyeur) séparés par une virgule
                 String message = new String(in.getData(),0,in.getLength());
                 // on définit le délimiteur
                 String delim = "[,]";
-                //on sépare le message et on crée un tableau de 2 éléments contenant chaque partie du message
+                //on sépare le message et on crée un tableau de 3 éléments contenant chaque partie du message
+                //tokens[0]: but du message
+                //tokens[1]: login de l'envoyeur
+                //tokens[2]: port utilisé par l'envoyeur (servira pour une future connexion tcp)
                 String[] tokens = message.split(delim);
                 if(tokens[0].equals("Connected")) {
                     //ajout de l'utilisateur venant de se connecter
-                    connectedUsers.put(tokens[1], new InfoMachine(client,clientPort));
+                    connectedUsers.put(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
                 }
                 if (tokens[0].equals("Disconnected")) {
                     connectedUsers.remove(tokens[1]);
@@ -128,7 +142,7 @@ public class UDPConnect extends Thread {
                 if (tokens[0].equals("Verify") ) {
                     sendLogin(client,clientPort);
                 }
-                System.out.println("J'ai reçu un message du port " + clientPort.toString() + ": " + message);
+                System.out.println(tokens[1] + "J'ai reçu un message du port " +tokens[2] + ": " + message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
