@@ -2,6 +2,9 @@ package models;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Random;
+
+import connection.UDPConnect;
 
 public class User {
 	private String login;
@@ -9,13 +12,19 @@ public class User {
 	private Integer port;
 	private Boolean status;
 	
-	public User(String l,Integer p) throws UnknownHostException {
+	public User(String l) throws UnknownHostException {
 		// TODO Auto-generated constructor stub
 		this.login=l;
 		this.address = InetAddress.getLocalHost();
-		this.port = p;
+		this.port = obtainPort();
 	}
 
+	public Integer obtainPort(){
+		 Random rand = new Random();
+		 int randomPort = rand.nextInt((65535 - 1024) + 1) + 1024;
+		 return randomPort;
+	}
+	
 	public String getLogin() {
 		return login;
 	}

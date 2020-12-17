@@ -42,8 +42,8 @@ public class UDPConnect extends Thread {
     //private Hashtable<String, InetAddress> connectedUsers = new Hashtable();
     private Map<String,InfoMachine> connectedUsers = new HashMap<>();
     //private BroadcastUDP br = new BroadcastUDP();
-    private DatagramSocket socket1; //envoi broadcast
-    private DatagramSocket socket2; //réception broadcast
+    private DatagramSocket socket_envoi; 
+    private DatagramSocket socket_reception;
     private byte[] buffer;
     private Integer broadcastPort = 6666;
 
@@ -53,7 +53,8 @@ public class UDPConnect extends Thread {
         this.address = user.getAddress();
 
         try {
-            socket1 = new DatagramSocket(this.port);
+            socket_envoi = new DatagramSocket();
+            socket_reception = new DatagramSocket(this.port);
             buffer = new byte[256];
         } catch (SocketException e) {
             e.printStackTrace();
@@ -67,10 +68,19 @@ public class UDPConnect extends Thread {
     public String getLogin() {
         return login;
     }
-
+    public Integer getPort(){
+    	return port;
+    }
+    public DatagramSocket getSocketEnvoi(){
+    	return socket_envoi;
+    }
+    public DatagramSocket getSocketReception(){
+    	return socket_reception;
+    }
     public void sendLogin(InetAddress ipdest, Integer portdest) throws IOException {
-        DatagramPacket message = new DatagramPacket(getLogin().getBytes(StandardCharsets.UTF_8),getLogin().length(),ipdest,portdest);
-        socket1.send(message);
+    	String m = "ToVerify,"+getLogin()+","+port.toString(); 
+        DatagramPacket message = new DatagramPacket(m.getBytes(),m.length(),ipdest,portdest);
+        socket_envoi.send(message);
     }
 
     public InetAddress getBroadcastAddress() throws SocketException {
@@ -94,17 +104,31 @@ public class UDPConnect extends Thread {
     }
 
 
-    public void sendMessageBroadcast(String message) throws IOException {
+    public void sendMessageBroadcast(String message,Integer portdest,UDPConnect udp){
+    	System.out.println(getLogin()+" is sending this: "+message+ " to port dest "+portdest);
         try {
                 //envoi d'un message en broadcast pour connaitre les users connectés
                 //br.broadcast(message,getBroadcastAddress() );
-            this.socket1.setBroadcast(true);
-
+        	System.out.println("bloc try");
+        	System.out.println(udp.getSocketEnvoi().toString());
+        	
+            udp.getSocketEnvoi().setBroadcast(true);
+            System.out.println(udp.getSocketEnvoi().getBroadcast()+"*****");
+            if(udp.getSocketEnvoi().getBroadcast()){
+            	System.out.println("The broadcast is activated");
+            	        } else{
+            	System.out.println("The broadcast is not activated");
+            	        };
+            	  
+            System.out.println("broadcast activated");
             byte[] buffer = message.getBytes();
-
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, getBroadcastAddress(),this.port);
-            socket1.send(packet);
-            System.out.println("OK");
+            System.out.println("buffer created");
+            InetAddress broadcastaddress = InetAddress.getByName("255.255.255.255");
+            System.out.println(broadcastaddress);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length,broadcastaddress ,portdest);
+            System.out.println("packet created");
+            udp.getSocketEnvoi().send(packet);
+            System.out.println("message sent !");
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -116,11 +140,12 @@ public class UDPConnect extends Thread {
     }
 
     public void run() {
+    	System.out.println(getLogin() +": server running");
         while(true) {
             DatagramPacket in = new DatagramPacket(buffer,buffer.length);
             try {
                 //socket2 = new DatagramSocket(this.broadcastPort);
-                socket1.receive(in);
+                this.getSocketReception().receive(in);
                 InetAddress client = in.getAddress();
                 Integer clientPort = in.getPort();
                 // le message doit contenir deux éléments (le but du message et le login de l'envoyeur) séparés par une virgule
@@ -142,7 +167,12 @@ public class UDPConnect extends Thread {
                 if (tokens[0].equals("Verify") ) {
                     sendLogin(client,clientPort);
                 }
-                System.out.println(tokens[1] + "J'ai reçu un message du port " +tokens[2] + ": " + message);
+                if (tokens[0].equals("ToVerify")){
+                	if (tokens[1].equals(getLogin())){
+                		System.out.println("This login is already used");
+                	}
+                }
+                System.out.println(this.login + ": J'ai reçu un message du port " +tokens[2] + ": " + message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
