@@ -25,6 +25,8 @@ public class LoginWindow {
 	//variables de test
 	private User testuser;
 	private UDPConnect testudp;
+	
+	private UserInterface userinterface;
 	/**
 	 * Launch the application.
 	 */
@@ -51,6 +53,8 @@ public class LoginWindow {
 		session_udp = new UDPConnect(current_user);
 		session_udp.start();
 	}
+	
+	
 	/**
 	 * Create the application.
 	 */
@@ -119,7 +123,7 @@ public class LoginWindow {
 				else {
 					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort(), testudp.getPort());
 					JOptionPane.showMessageDialog(null,"Connection done! Your login is: "+session_udp.getLogin(),"Good",JOptionPane.INFORMATION_MESSAGE);
-					
+					UserInterface window = new UserInterface(current_user, session_udp);
 				}
 			}
 		});
