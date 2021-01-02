@@ -1,0 +1,56 @@
+package views;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+
+import models.User;
+
+public class ChatWindow {
+
+	private JFrame frmChat;
+	private static User sender;
+	private static User receiver;
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ChatWindow window = new ChatWindow(sender,receiver);
+					window.frmChat.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public ChatWindow(User s, User r) {
+		setSender(s);
+		setReceiver(r);
+		initialize();
+	}
+	
+	public void setSender(User u) {
+		sender = u;
+	}
+	public void setReceiver(User u) {
+		receiver = u;
+	}
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frmChat = new JFrame();
+		frmChat.setTitle("Chat with " + receiver.getLogin());
+		frmChat.setBounds(100, 100, 450, 300);
+		frmChat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmChat.setVisible(true);
+	}
+
+}

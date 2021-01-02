@@ -12,11 +12,19 @@ public class User {
 	private Integer port;
 	private Boolean status;
 	
+	//constructor used when we want to give a random port to the created user
 	public User(String l) throws UnknownHostException {
 		// TODO Auto-generated constructor stub
 		this.login=l;
 		this.address = InetAddress.getLocalHost();
 		this.port = obtainPort();
+	}
+	//constructor used when we already know which port needs to be used by the user
+	public User(String l, Integer p) throws UnknownHostException {
+		// TODO Auto-generated constructor stub
+		this.login=l;
+		this.address = InetAddress.getLocalHost();
+		this.port = p;
 	}
 
 	public Integer obtainPort(){
@@ -25,6 +33,14 @@ public class User {
 		 return randomPort;
 	}
 	
+	public User getUser(String name){
+		if (name.equals(login)){
+			return this;
+		}
+		else {
+			return null;
+		}
+	}
 	public String getLogin() {
 		return login;
 	}

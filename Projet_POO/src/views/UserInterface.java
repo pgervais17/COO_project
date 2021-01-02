@@ -10,7 +10,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.awt.event.ActionEvent;
+
 import connection.UDPConnect;
 import models.User;
 import javax.swing.JFormattedTextField;
@@ -18,6 +20,8 @@ import java.awt.TextArea;
 import java.awt.TextField;
 import javax.swing.JTextPane;
 import java.awt.Font;
+import javax.swing.JList;
+import javax.swing.JComboBox;
 
 public class UserInterface {
 
@@ -28,7 +32,7 @@ public class UserInterface {
 	
 	private static User user;
 	private static UDPConnect udp_session;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -63,6 +67,7 @@ public class UserInterface {
 	
 	public void ListConnect() {
 	}
+	
 
 	/**
 	 * Initialize the contents of the frame.
@@ -97,11 +102,31 @@ public class UserInterface {
 		btnNewButton.setBounds(875, 90, 86, 23);
 		frame.getContentPane().add(btnNewButton);
 		
-		JLabel lblMylogin = new JLabel("Mylogin");
+		JLabel lblMylogin = new JLabel(user.getLogin());
 		lblMylogin.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		lblMylogin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMylogin.setBounds(0, 0, 986, 37);
 		frame.getContentPane().add(lblMylogin);
+		String[] connectedUsers = udp_session.getConnectedUsersName();
+		JComboBox comboBox = new JComboBox(connectedUsers);
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
+				String receiverLogin = comboBox.getSelectedItem().toString();
+				User receiver = udp_session.getUserConnected(receiverLogin);
+				ChatWindow chat = new ChatWindow(user,receiver);
+			}
+		});
+		comboBox.setBounds(80, 180, 91, 20);
+		
+		frame.getContentPane().add(comboBox);
+		
+		JLabel lblStartAChat = new JLabel("Start a chat with");
+		lblStartAChat.setBounds(80, 155, 108, 14);
+		frame.getContentPane().add(lblStartAChat);
+		
+		//String[] data = udp_session.getConnectedUsersName();
+		
 	}
 }
 

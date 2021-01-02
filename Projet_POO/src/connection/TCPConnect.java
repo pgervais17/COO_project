@@ -14,30 +14,45 @@ public class TCPConnect extends Thread{
     private String login;
     private ServerSocket server;
 
-    public TCPConnect(User user) throws IOException {
+    public TCPConnect(User user) {
         this.address = user.getAddress();
         this.port = user.getPort();
         this.login = user.getLogin();
-        server = new ServerSocket(getPort());
+        try {
+			server = new ServerSocket(getPort());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public InetAddress getAddress() {
         return address;
     }
 
-    public void sendMessage(String message, InetAddress ipdest, Integer portdest) throws IOException {
-        Socket socket_client = new Socket(ipdest,portdest);
-        PrintWriter writer = new PrintWriter(socket_client.getOutputStream(),true);
-        writer.write(message);
-        writer.flush();
-        socket_client.close();
+    public void sendMessage(String message, InetAddress ipdest, Integer portdest) {
+        Socket socket_client;
+		try {
+			socket_client = new Socket(ipdest,portdest);
+			 PrintWriter writer = new PrintWriter(socket_client.getOutputStream(),true);
+		     writer.write(message);
+		     writer.flush();
+		     socket_client.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
     }
 
     public void run() {
         try {
-            Socket socket_server = server.accept();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket_server.getInputStream()));
-            System.out.println(reader.readLine());
+        	while(true) {
+        		Socket socket_server = server.accept();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket_server.getInputStream()));
+                System.out.println(reader.readLine());
+        	}
+            
          } catch (IOException e) {
             e.printStackTrace();
         }

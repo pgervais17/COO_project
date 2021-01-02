@@ -40,7 +40,8 @@ public class UDPConnect extends Thread {
     //port utilisé par tous les serveurs UDP pour écouter le broadcast
     private  InetAddress address;
     //private Hashtable<String, InetAddress> connectedUsers = new Hashtable();
-    private Map<String,InfoMachine> connectedUsers = new HashMap<>();
+    //private Map<String,InfoMachine> connectedUsers = new HashMap<>();
+    private ArrayList<User> connectedUsers = new ArrayList<User>();
     //private BroadcastUDP br = new BroadcastUDP();
     private DatagramSocket socket_envoi; 
     private DatagramSocket socket_reception;
@@ -55,7 +56,7 @@ public class UDPConnect extends Thread {
         this.address = user.getAddress();
 
         try {
-            socket_envoi = new DatagramSocket();
+            socket_envoi = new DatagramSocket(broadcastPort);
             socket_reception = new DatagramSocket(this.port);
             buffer = new byte[256];
         } catch (SocketException e) {
@@ -69,17 +70,37 @@ public class UDPConnect extends Thread {
     	socket_reception.close();
     	running = false;
     }
-    public Map<String, InfoMachine> getConnectedUsers() {
+    public ArrayList<User> getConnectedUsers() {
         return connectedUsers;
     }
+    
+    //method used to find the user connected associated to a certain login
+    public User getUserConnected(String login){
+    	for (User u : getConnectedUsers()){
+    		if (u.getLogin().equals(login)){
+    			return u;
+    		}
+    	}
+    	return null;
+    }
+    public String[] getConnectedUsersName() {
+    	String[] result = new String[connectedUsers.size()];
+    	int i = 0;
+    	for(User u : getConnectedUsers()) {
+    		result[i] = u.getLogin();
+    		i++;
+    	}
+    	return result;
+    }
+ 
     public void printConnectedUsers(){
-    	Iterator i = connectedUsers.keySet().iterator();
+    	int i = 0;
     	System.out.println("Table des utilisateurs connectés de " + getLogin());
-    	while (i.hasNext())
+    	while (i < getConnectedUsers().size())
     	{
-    	    String name = (String)i.next();
-    	    InetAddress address = (connectedUsers.get(name).GetAddress());
-    	    String port =(connectedUsers.get(name).GetPort()).toString();
+    	    String name = getConnectedUsers().get(i).getLogin();
+    	    InetAddress address = getConnectedUsers().get(i).getAddress();
+    	    Integer port =getConnectedUsers().get(i).getPort();;
     	    System.out.println("User: "+ name + ", address: "+ address + ", port : " + port);
     	}
     }
@@ -176,8 +197,9 @@ public class UDPConnect extends Thread {
             try {
                 //socket2 = new DatagramSocket(this.broadcastPort);
                 this.getSocketReception().receive(in);
-                InetAddress client = in.getAddress();
+                InetAddress clientAddress = in.getAddress();
                 Integer clientPort = in.getPort();
+
                 // le message doit contenir deux éléments (le but du message et le login de l'envoyeur) séparés par une virgule
                 String message = new String(in.getData(),0,in.getLength());
                 // on définit le délimiteur
@@ -187,21 +209,26 @@ public class UDPConnect extends Thread {
                 //tokens[1]: login de l'envoyeur
                 //tokens[2]: port utilisé par l'envoyeur (servira pour une future connexion tcp)
                 String[] tokens = message.split(delim);
+                
+                //we create a User with the sender's information
+                User client = new User(tokens[1],Integer.parseInt(tokens[2]));
                 if(tokens[0].equals("Connected")) {
                     //ajout de l'utilisateur venant de se connecter
-                    connectedUsers.put(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
-                    printConnectedUsers();
-                    sendConnectedResponse(client,Integer.parseInt(tokens[2]));
+                    //connectedUsers.put(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
+                	connectedUsers.add(client);
+                    //printConnectedUsers();
+                    sendConnectedResponse(clientAddress,Integer.parseInt(tokens[2]));
                 }
                 if(tokens[0].equals("ConnectedToo")){
-                	connectedUsers.putIfAbsent(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
-                	printConnectedUsers();
+                	//connectedUsers.putIfAbsent(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
+                	connectedUsers.add(client);
+                	//printConnectedUsers();
                 }
                 if (tokens[0].equals("Disconnected")) {
-                    connectedUsers.remove(tokens[1]);
+                    connectedUsers.remove(client);
                 }
                 if (tokens[0].equals("Verify") ) {
-                    sendLogin(client,Integer.parseInt(tokens[2]));
+                    sendLogin(clientAddress,Integer.parseInt(tokens[2]));
                 }
                 if (tokens[0].equals("ToVerify")){
                 	if (tokens[1].equals(getLogin())){
