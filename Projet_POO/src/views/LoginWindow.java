@@ -25,6 +25,8 @@ public class LoginWindow {
 	//variables de test
 	private User testuser;
 	private UDPConnect testudp;
+	private User testuser2;
+	private UDPConnect testudp2;
 	
 	private UserInterface userinterface;
 	/**
@@ -44,12 +46,7 @@ public class LoginWindow {
 	}
 
 	public void create_new_user_session(String l) {
-		try {
-			current_user = new User(l);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		};
+		current_user = new User(l);;
 		session_udp = new UDPConnect(current_user);
 		session_udp.start();
 	}
@@ -70,17 +67,12 @@ public class LoginWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		//POUR TEST UNIQUEMENT
-		try{
-			testuser = new User("paul");
-			testudp = new UDPConnect(testuser);
-			testudp.start();
-		}catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		};
-		
-		
+		testuser = new User("paul");
+		testudp = new UDPConnect(testuser);
+		testudp.start();
+		testuser2 = new User("john");
+		testudp2 = new UDPConnect(testuser2);
+		testudp2.start();;
 		
 		
 		frame = new JFrame();
@@ -126,6 +118,7 @@ public class LoginWindow {
 				//sinon getIsLoginValid renvoie true donc on peut prendre ce pseudo et se connecter
 				else {
 					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort(), testudp.getPort());
+					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort(), testudp2.getPort());
 					JOptionPane.showMessageDialog(null,"Connection done! Your login is: "+session_udp.getLogin(),"Good",JOptionPane.INFORMATION_MESSAGE);
 					userinterface = new UserInterface(current_user, session_udp);
 					closeWindow();

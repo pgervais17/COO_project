@@ -56,7 +56,9 @@ public class UDPConnect extends Thread {
         this.address = user.getAddress();
 
         try {
-            socket_envoi = new DatagramSocket(broadcastPort);
+            /*socket_envoi = new DatagramSocket(this.port);
+            socket_reception = new DatagramSocket(broadcastPort); */
+        	socket_envoi = new DatagramSocket();
             socket_reception = new DatagramSocket(this.port);
             buffer = new byte[256];
         } catch (SocketException e) {
@@ -179,7 +181,7 @@ public class UDPConnect extends Thread {
             getSocketEnvoi().setBroadcast(true);  	  
             byte[] buffer = message.getBytes();
             //InetAddress broadcastaddress = InetAddress.getByName("255.255.255.255");
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length,getBroadcastAddress() ,portdest);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length,InetAddress.getByName("255.255.255.255") ,portdest);
             getSocketEnvoi().send(packet);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -202,6 +204,7 @@ public class UDPConnect extends Thread {
 
                 // le message doit contenir deux éléments (le but du message et le login de l'envoyeur) séparés par une virgule
                 String message = new String(in.getData(),0,in.getLength());
+                System.out.println("Message recu: "+message);
                 // on définit le délimiteur
                 String delim = "[,]";
                 //on sépare le message et on crée un tableau de 3 éléments contenant chaque partie du message
@@ -217,7 +220,7 @@ public class UDPConnect extends Thread {
                     //connectedUsers.put(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
                 	connectedUsers.add(client);
                     //printConnectedUsers();
-                    sendConnectedResponse(clientAddress,Integer.parseInt(tokens[2]));
+                    sendConnectedResponse(clientAddress, Integer.parseInt(tokens[2]));
                 }
                 if(tokens[0].equals("ConnectedToo")){
                 	//connectedUsers.putIfAbsent(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
@@ -240,6 +243,8 @@ public class UDPConnect extends Thread {
                 	}
                 }
                 //System.out.println(getLogin() + ": J'ai reçu un message sur le port " + getPort() + ": " + message);
+            } catch (SocketException se){
+            	
             } catch (IOException e) {
                 e.printStackTrace();
             }

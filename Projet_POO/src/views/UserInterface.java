@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.awt.event.ActionEvent;
@@ -32,6 +34,8 @@ public class UserInterface {
 	
 	private static User user;
 	private static UDPConnect udp_session;
+	
+	private WindowAdapter windowAdapter = null;
 	
 	/**
 	 * Launch the application.
@@ -67,7 +71,6 @@ public class UserInterface {
 	
 	public void ListConnect() {
 	}
-	
 
 	/**
 	 * Initialize the contents of the frame.
@@ -81,6 +84,28 @@ public class UserInterface {
 		frame.getContentPane().setLayout(null);
 		
 		frame.setVisible(true);
+		
+		this.windowAdapter = new WindowAdapter() {
+	        // WINDOW_CLOSING event handler
+	        @Override
+	        public void windowClosing(WindowEvent e) {
+	            super.windowClosing(e);
+	            udp_session.closeSession();                   
+	        }
+
+	        // WINDOW_CLOSED event handler
+	        @Override
+	        public void windowClosed(WindowEvent e) {
+	            super.windowClosed(e);
+	            // Close application if you want to with System.exit(0)
+	            // but don't forget to dispose of all resources 
+	            // like child frames, threads, ...
+	            // System.exit(0);
+	        }
+	    };
+	    
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.addWindowListener(this.windowAdapter);
 		
 		JLabel lblNewLabel = new JLabel("Change your login here");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -108,6 +133,7 @@ public class UserInterface {
 		lblMylogin.setBounds(0, 0, 986, 37);
 		frame.getContentPane().add(lblMylogin);
 		String[] connectedUsers = udp_session.getConnectedUsersName();
+		
 		JComboBox comboBox = new JComboBox(connectedUsers);
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {

@@ -7,7 +7,7 @@ import java.net.InetAddress;
 
 public class TestConnexions {
     public static void main(String[] args) throws IOException, InterruptedException {
-        User paul = new User("Paul");
+        /*User paul = new User("Paul");
         User eva = new User("Eva");
         System.out.println(paul.getLogin()+": "+ paul.getPort()+ ", " + paul.getAddress());
 		System.out.println(eva.getLogin()+": "+eva.getPort() + ", "+ eva.getAddress());
@@ -35,6 +35,11 @@ public class TestConnexions {
         tcp_paul.start();
         tcp_eva.sendMessage("Coucou paul!", InetAddress.getLocalHost(),paul.getPort()); 
         tcp_eva.sendMessage("ça va ?", InetAddress.getLocalHost(),paul.getPort());*/
+    	
+    	User eva = new User("Eva");
+    	UDPConnect udp = new UDPConnect(eva);
+    	udp.start();
+    	udp.sendMessageBroadcast("Connected,Eva,"+eva.getPort(), 6666);
     }
 
 }
