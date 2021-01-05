@@ -235,11 +235,11 @@ public class UDPConnect extends Thread {
                 }
                 if (tokens[0].equals("ToVerify")){
                 	if (tokens[1].equals(getLogin())){
-                		//System.out.println("This login is already used");
+                		System.out.println("This login is already used");
                 		setIsLoginValid(false);
                 	}
                 	else {
-                		//System.out.println("Login valid!");
+                		System.out.println("Login valid!");
                 	}
                 }
                 //System.out.println(getLogin() + ": J'ai reçu un message sur le port " + getPort() + ": " + message);

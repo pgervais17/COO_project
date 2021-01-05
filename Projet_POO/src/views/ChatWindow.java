@@ -1,6 +1,9 @@
 package views;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -11,6 +14,7 @@ import connection.TCPConnect;
 import connection.TCPThread;
 
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -20,6 +24,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import java.awt.Font;
+import java.awt.Frame;
 
 public class ChatWindow {
 
@@ -30,7 +37,7 @@ public class ChatWindow {
 	private JTextField textField;
 	//for now we only consider messages as strings
 	private String message;
-	
+	private JScrollPane scrollPane;
 	private WindowAdapter windowAdapter = null;
 	private JTextArea textArea;
 	private TCPConnect tcp_receiver_session;
@@ -51,7 +58,12 @@ public class ChatWindow {
 			}
 		});
 	}
-
+	//used to put the frame back in front when it was minimized
+	public void putInFront(){
+		frmChat.setState(Frame.NORMAL);
+		frmChat.toFront();
+		frmChat.setVisible(true);
+	}
 	/**
 	 * Create the application.
 	 */
@@ -96,8 +108,13 @@ public class ChatWindow {
 	private void initialize() {
 		frmChat = new JFrame();
 		frmChat.setTitle("Chat with " + receiver.getLogin());
-		frmChat.setBounds(100, 100, 450, 300);
-		//frmChat.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		int longueur = d.width *2/3;
+		int hauteur = d.height *2/3;
+		frmChat.setSize(d);
+		frmChat.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frmChat.setVisible(true);
 		frmChat.getContentPane().setLayout(null);
 		
 		this.windowAdapter = new WindowAdapter() {
@@ -120,32 +137,22 @@ public class ChatWindow {
 	        }
 	    };
 	    
-	    frmChat.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	    frmChat.addWindowListener(this.windowAdapter);
-	    
-		JLabel lblAddress = new JLabel("Address: " + receiver.getAddress());
-		lblAddress.setBounds(10, 11, 170, 14);
-		frmChat.getContentPane().add(lblAddress);
-		
-		JLabel lblPort = new JLabel("Port: "+ receiver.getPort());
-		lblPort.setBounds(10, 31, 170, 14);
-		frmChat.getContentPane().add(lblPort);
 		
 		textField = new JTextField();
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		textField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				message = textField.getText();
 			}
 		});
-		
-		
-		
-		
-		textField.setBounds(161, 207, 130, 43);
+		textField.setBounds(468, 916, 969, 74);
 		frmChat.getContentPane().add(textField);
 		textField.setColumns(10);
+		
 		JButton btnNewButton = new JButton("Send");
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -160,12 +167,9 @@ public class ChatWindow {
 				}
 			}
 		});
-		btnNewButton.setBounds(310, 217, 89, 23);
+		btnNewButton.setBounds(1497, 939, 98, 29);
 		frmChat.getContentPane().add(btnNewButton); 
-				
-		textArea = new JTextArea();
-		textArea.setBounds(123, 36, 192, 108);
-		frmChat.getContentPane().add(textArea);
+		
 		
 		JButton btnNewButton_1 = new JButton("test");
 		btnNewButton_1.addActionListener(new ActionListener() {
@@ -173,9 +177,24 @@ public class ChatWindow {
 				tcp_receiver_session.sendMessage("Réponse!",sender);
 			}
 		});
-		btnNewButton_1.setBounds(10, 180, 89, 23);
+		btnNewButton_1.setBounds(21, 932, 89, 23);
 		frmChat.getContentPane().add(btnNewButton_1); 
-		frmChat.setVisible(true);
+		
+		textArea = new JTextArea();
+		textArea.setTabSize(20);
+		textArea.setFont(new Font("Monospaced", Font.PLAIN, 21));
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setVisible(true);
+		textArea.setBounds(141, 71, 89, 60);
+		
+		JScrollPane scrollPane_1 = new JScrollPane(textArea);
+		scrollPane_1.setBounds(66, 36, 1784, 800);
+		frmChat.getContentPane().add(scrollPane_1);
+		
+		
+		
+		
 		
 	}
 }

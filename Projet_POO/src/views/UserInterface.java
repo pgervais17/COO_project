@@ -1,5 +1,6 @@
 package views;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -12,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
 
@@ -20,6 +23,8 @@ import models.User;
 import javax.swing.JFormattedTextField;
 import java.awt.TextArea;
 import java.awt.TextField;
+import java.awt.Toolkit;
+
 import javax.swing.JTextPane;
 import java.awt.Font;
 import javax.swing.JList;
@@ -36,7 +41,7 @@ public class UserInterface {
 	private static UDPConnect udp_session;
 	
 	private WindowAdapter windowAdapter = null;
-	
+	private HashMap<User,ChatWindow> chatStarted = new HashMap<User,ChatWindow>();
 	/**
 	 * Launch the application.
 	 */
@@ -79,7 +84,10 @@ public class UserInterface {
 				
 		frame = new JFrame();
 	
-		frame.setBounds(100, 100, 1000, 800);
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		int longueur = d.width *2/3;
+		int hauteur = d.height *2/3;
+		frame.setSize(d);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -108,23 +116,26 @@ public class UserInterface {
 	    frame.addWindowListener(this.windowAdapter);
 		
 		JLabel lblNewLabel = new JLabel("Change your login here");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(833, 45, 153, 14);
+		lblNewLabel.setBounds(1565, 31, 272, 40);
 		frame.getContentPane().add(lblNewLabel);
 		
 		txtChangeYourLogin = new JTextField();
+		txtChangeYourLogin.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		txtChangeYourLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				login = txtChangeYourLogin.getText();
 			}
 		});
-		txtChangeYourLogin.setBounds(875, 65, 86, 20);
+		txtChangeYourLogin.setBounds(1565, 82, 290, 40);
 		frame.getContentPane().add(txtChangeYourLogin);
 		txtChangeYourLogin.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Change");
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		
-		btnNewButton.setBounds(875, 90, 86, 23);
+		btnNewButton.setBounds(1657, 138, 124, 40);
 		frame.getContentPane().add(btnNewButton);
 		
 		JLabel lblMylogin = new JLabel(user.getLogin());
@@ -135,20 +146,30 @@ public class UserInterface {
 		String[] connectedUsers = udp_session.getConnectedUsersName();
 		
 		JComboBox comboBox = new JComboBox(connectedUsers);
+		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
 				String receiverLogin = comboBox.getSelectedItem().toString();
 				User receiver = udp_session.getUserConnected(receiverLogin);
-				ChatWindow chat = new ChatWindow(user,receiver);
+				//si le chat n'est pas déjà ouvert, on l'ouvre
+				if (!chatStarted.containsKey(receiver)){
+					ChatWindow chat = new ChatWindow(user,receiver);
+					chatStarted.put(receiver, chat);
+				} else {
+					//s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
+					frame.toBack();
+					chatStarted.get(receiver).putInFront();
+				}
 			}
 		});
-		comboBox.setBounds(80, 180, 91, 20);
+		comboBox.setBounds(42, 192, 159, 45);
 		
 		frame.getContentPane().add(comboBox);
 		
 		JLabel lblStartAChat = new JLabel("Start a chat with");
-		lblStartAChat.setBounds(80, 155, 108, 14);
+		lblStartAChat.setFont(new Font("Tahoma", Font.PLAIN, 21));
+		lblStartAChat.setBounds(42, 136, 230, 45);
 		frame.getContentPane().add(lblStartAChat);
 		
 		//String[] data = udp_session.getConnectedUsersName();

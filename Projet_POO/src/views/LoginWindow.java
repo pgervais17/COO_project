@@ -1,6 +1,8 @@
 package views;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,10 +11,13 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.net.UnknownHostException;
 import java.awt.event.ActionEvent;
 import connection.UDPConnect;
 import models.User;
+import java.awt.Font;
 
 public class LoginWindow {
 	//variables swing
@@ -46,9 +51,15 @@ public class LoginWindow {
 	}
 
 	public void create_new_user_session(String l) {
-		current_user = new User(l);;
-		session_udp = new UDPConnect(current_user);
-		session_udp.start();
+		Integer size = l.length();
+		if (!size.equals(0)) {
+			current_user = new User(l);;
+			session_udp = new UDPConnect(current_user);
+			session_udp.start();
+		} else {
+			JOptionPane.showMessageDialog(null,"You need to enter at least one character!","Error",JOptionPane.ERROR_MESSAGE);
+		}
+		
 	}
 	
 	
@@ -76,26 +87,34 @@ public class LoginWindow {
 		
 		
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		int longueur = d.width *2/3;
+		int hauteur = d.height *2/3;
+		frame.setSize(d);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Please enter login");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 27));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(143, 23, 145, 14);
+		lblNewLabel.setBounds(855, 337, 225, 38);
 		frame.getContentPane().add(lblNewLabel);
 		
 		textField = new JTextField();
-		textField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 27));
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
 				login = textField.getText();
 			}
 		});
-		textField.setBounds(176, 49, 86, 20);
+		
+		textField.setBounds(805, 410, 325, 38);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Log in");
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				create_new_user_session(login);
@@ -103,6 +122,7 @@ public class LoginWindow {
 				System.out.println(testuser.getLogin()+": "+testuser.getPort() + ", "+ testuser.getAddress());
 				//on demande aux autres utilisateurs de vérifier le login entré
 				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp.getPort());
+				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp2.getPort());
 				//Nécessaire pour laisser le temps aux utilisateurs d'envoyer leur login à session_udp et permettre à session_udp de traiter les réponses
 				try {
 					session_udp.sleep(100);
@@ -125,7 +145,7 @@ public class LoginWindow {
 				}
 			}
 		});
-		btnNewButton.setBounds(176, 82, 89, 23);
+		btnNewButton.setBounds(917, 482, 100, 38);
 		frame.getContentPane().add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("fermer sockets");
@@ -135,7 +155,7 @@ public class LoginWindow {
 				testudp.closeSession();
 			}
 		});
-		btnNewButton_1.setBounds(74, 182, 122, 23);
+		btnNewButton_1.setBounds(34, 993, 122, 23);
 		frame.getContentPane().add(btnNewButton_1);
 	}
 }
