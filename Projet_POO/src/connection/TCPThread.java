@@ -27,6 +27,7 @@ public class TCPThread extends Thread{
 	public void close(){
 		try {
 			this.socket.close();
+			System.out.println("Thread closed");
 		} catch (SocketException se){
 			System.out.println(""); 
 		}

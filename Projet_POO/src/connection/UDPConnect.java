@@ -1,6 +1,7 @@
 package connection;
 
 import models.User;
+import views.UserInterface;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -49,6 +50,7 @@ public class UDPConnect extends Thread {
     private Integer broadcastPort = 6666;
     private Boolean running=true;
     private Boolean isLoginValid = true;
+    private UserInterface userInterface = null;
     
     public UDPConnect(User user){
         this.login = user.getLogin();
@@ -66,6 +68,12 @@ public class UDPConnect extends Thread {
         }
     }
     
+    public void setUserInterface(UserInterface ui){
+    	this.userInterface = ui;
+    }
+    public UserInterface getUserInterface(){
+    	return this.userInterface;
+    }
     public void closeSession(){
     	System.out.println("Closing "+ getLogin()+ " session");
     	socket_envoi.close();
@@ -96,13 +104,11 @@ public class UDPConnect extends Thread {
     }
  
     public void printConnectedUsers(){
-    	int i = 0;
     	System.out.println("Table des utilisateurs connectés de " + getLogin());
-    	while (i < getConnectedUsers().size())
-    	{
-    	    String name = getConnectedUsers().get(i).getLogin();
-    	    InetAddress address = getConnectedUsers().get(i).getAddress();
-    	    Integer port =getConnectedUsers().get(i).getPort();;
+    	for (User u : this.connectedUsers) {
+    	    String name = u.getLogin();
+    	    InetAddress address = u.getAddress();
+    	    Integer port =u.getPort();;
     	    System.out.println("User: "+ name + ", address: "+ address + ", port : " + port);
     	}
     }
@@ -219,12 +225,22 @@ public class UDPConnect extends Thread {
                     //ajout de l'utilisateur venant de se connecter
                     //connectedUsers.put(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
                 	connectedUsers.add(client);
+                	try {
+                		this.userInterface.updateListUsersAvailable();
+                	} catch (NullPointerException e){
+                		
+                	};
                     //printConnectedUsers();
                     sendConnectedResponse(clientAddress, Integer.parseInt(tokens[2]));
                 }
                 if(tokens[0].equals("ConnectedToo")){
                 	//connectedUsers.putIfAbsent(tokens[1], new InfoMachine(client, Integer.parseInt(tokens[2])));
                 	connectedUsers.add(client);
+                	try {
+                		this.userInterface.updateListUsersAvailable();
+                	} catch (NullPointerException e){
+                		
+                	};
                 	//printConnectedUsers();
                 }
                 if (tokens[0].equals("Disconnected")) {

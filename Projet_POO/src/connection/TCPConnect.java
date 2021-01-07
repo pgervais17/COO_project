@@ -30,11 +30,12 @@ public class TCPConnect extends Thread{
     public void closeSession(){
     	
 			try {
-				server.close();
 				for (TCPThread t : threads) {
 					//close all opened threads
 					t.close();
 				}
+				server.close();
+				
 				System.out.println("Session tcp closed");
 			} catch (SocketException se){
 				
@@ -46,6 +47,10 @@ public class TCPConnect extends Thread{
 			}
 			
 		
+    }
+    
+    public void closeThreadWith(User u){
+    	getTCPThreadWith(u).close();
     }
     public InetAddress getAddress() {
         return address;

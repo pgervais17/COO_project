@@ -18,18 +18,14 @@ public class TestConnexions {
         udp1.start();
         udp2.start();
         udp3.start();
-        udp1.sendMessageBroadcast("Verify,Paul,"+paul.getPort(),6666);
+        udp1.sendMessageBroadcast("Connected,Paul,"+paul.getPort(),eva.getPort());
+        udp2.sleep(1000);
+        udp1.sleep(1000);
+        udp2.printConnectedUsers();
+        udp1.printConnectedUsers();
+        //System.out.println(udp2.getConnectedUsers().get("Paul").GetPort()); 
         udp2.sleep(5000);
         udp1.sleep(5000);
-        System.out.println("Table des utilisateurs connectés de paul :");
-        String[] x = udp1.getConnectedUsersName();
-        for(String s : x) {
-        	System.out.println(s);
-        }
-        udp1.printConnectedUsers();
-        System.out.println("Table des utilisateurs connectés de Eva :");
-        udp2.printConnectedUsers();
-        //System.out.println(udp2.getConnectedUsers().get("Paul").GetPort()); 
         udp1.closeSession();
         udp2.closeSession();
     	/*TCPConnect tcp_paul = new TCPConnect(paul);

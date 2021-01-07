@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
 import javax.swing.JLabel;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
 
+import connection.TCPConnect;
 import connection.UDPConnect;
 import models.User;
 import javax.swing.JFormattedTextField;
@@ -39,9 +41,13 @@ public class UserInterface {
 	
 	private static User user;
 	private static UDPConnect udp_session;
+	private TCPConnect tcp_session;
 	
 	private WindowAdapter windowAdapter = null;
 	private HashMap<User,ChatWindow> chatStarted = new HashMap<User,ChatWindow>();
+	private String[] connectedUsers = null;
+	private JComboBox comboBox;
+
 	/**
 	 * Launch the application.
 	 */
@@ -63,6 +69,12 @@ public class UserInterface {
 	public UserInterface(User u, UDPConnect session) {
 		this.user=u;
 		this.udp_session = session;
+		this.udp_session.setUserInterface(this);
+		System.out.println("user interface set to "  + this.udp_session.getUserInterface());
+		this.tcp_session = new TCPConnect(u);
+		this.tcp_session.start();
+
+		
 		initialize();
 	}
 	
@@ -76,7 +88,15 @@ public class UserInterface {
 	
 	public void ListConnect() {
 	}
-
+	
+	public void updateListUsersAvailable() {
+		this.connectedUsers = this.udp_session.getConnectedUsersName();
+		for (String username : this.connectedUsers){
+			if(((DefaultComboBoxModel)comboBox.getModel()).getIndexOf(username) == -1) {
+				this.comboBox.addItem(username);
+			}	
+		}
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -98,7 +118,8 @@ public class UserInterface {
 	        @Override
 	        public void windowClosing(WindowEvent e) {
 	            super.windowClosing(e);
-	            udp_session.closeSession();                   
+	            udp_session.closeSession();    
+	            tcp_session.closeSession();
 	        }
 
 	        // WINDOW_CLOSED event handler
@@ -143,9 +164,9 @@ public class UserInterface {
 		lblMylogin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMylogin.setBounds(0, 0, 986, 37);
 		frame.getContentPane().add(lblMylogin);
-		String[] connectedUsers = udp_session.getConnectedUsersName();
+		this.connectedUsers = udp_session.getConnectedUsersName();
 		
-		JComboBox comboBox = new JComboBox(connectedUsers);
+		comboBox = new JComboBox(connectedUsers);
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -154,7 +175,7 @@ public class UserInterface {
 				User receiver = udp_session.getUserConnected(receiverLogin);
 				//si le chat n'est pas déjà ouvert, on l'ouvre
 				if (!chatStarted.containsKey(receiver)){
-					ChatWindow chat = new ChatWindow(user,receiver);
+					ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
 					chatStarted.put(receiver, chat);
 				} else {
 					//s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
@@ -172,6 +193,11 @@ public class UserInterface {
 		lblStartAChat.setBounds(42, 136, 230, 45);
 		frame.getContentPane().add(lblStartAChat);
 		
+		//pour tester l'update de la liste d'user connectés
+		/*User x = new User("x");
+		UDPConnect udptest = new UDPConnect(x);
+		udptest.start();
+		udptest.sendMessageBroadcast("Connected," + x.getLogin() +","+x.getPort(), this.user.getPort());*/
 		//String[] data = udp_session.getConnectedUsersName();
 		
 	}

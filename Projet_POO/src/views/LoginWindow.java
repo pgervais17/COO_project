@@ -33,7 +33,7 @@ public class LoginWindow {
 	private User testuser2;
 	private UDPConnect testudp2;
 	
-	private UserInterface userinterface;
+	private UserInterface userinterface=null;
 	/**
 	 * Launch the application.
 	 */
@@ -83,7 +83,7 @@ public class LoginWindow {
 		testudp.start();
 		testuser2 = new User("john");
 		testudp2 = new UDPConnect(testuser2);
-		testudp2.start();;
+		testudp2.start();
 		
 		
 		frame = new JFrame();
@@ -148,14 +148,5 @@ public class LoginWindow {
 		btnNewButton.setBounds(917, 482, 100, 38);
 		frame.getContentPane().add(btnNewButton);
 		
-		JButton btnNewButton_1 = new JButton("fermer sockets");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				session_udp.closeSession();
-				testudp.closeSession();
-			}
-		});
-		btnNewButton_1.setBounds(34, 993, 122, 23);
-		frame.getContentPane().add(btnNewButton_1);
 	}
 }

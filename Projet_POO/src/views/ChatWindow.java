@@ -50,7 +50,7 @@ public class ChatWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ChatWindow window = new ChatWindow(sender,receiver);
+					ChatWindow window = new ChatWindow(sender,receiver,tcp_session);
 					window.frmChat.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,21 +58,18 @@ public class ChatWindow {
 			}
 		});
 	}
-	//used to put the frame back in front when it was minimized
-	public void putInFront(){
-		frmChat.setState(Frame.NORMAL);
-		frmChat.toFront();
-		frmChat.setVisible(true);
-	}
+	
 	/**
 	 * Create the application.
 	 */
-	public ChatWindow(User s, User r) {
+	public ChatWindow(User s, User r, TCPConnect user_tcp_session) {
 		setSender(s);
 		setReceiver(r);
-		tcp_session = new TCPConnect(sender);
+		this.tcp_session = user_tcp_session;
+		/*tcp_session = new TCPConnect(sender);
 		tcp_session.start();
-		System.out.println("Session tcp started");
+		System.out.println("Session tcp started"); */
+		
 		//TEST
 		tcp_receiver_session = new TCPConnect(receiver);
 		tcp_receiver_session.start();
@@ -89,7 +86,12 @@ public class ChatWindow {
 		initialize();
 	}
 	
-	
+	//used to put the frame back in front when it was minimized
+		public void putInFront(){
+			frmChat.setState(Frame.NORMAL);
+			frmChat.toFront();
+			frmChat.setVisible(true);
+		}
 	
 	public void setSender(User u) {
 		sender = u;
@@ -122,8 +124,8 @@ public class ChatWindow {
 	        @Override
 	        public void windowClosing(WindowEvent e) {
 	            super.windowClosing(e);
-	            tcp_session.closeSession();
-				tcp_receiver_session.closeSession();                   
+	            tcp_session.closeThreadWith(receiver);
+				tcp_receiver_session.closeThreadWith(sender);                   
 	        }
 
 	        // WINDOW_CLOSED event handler
