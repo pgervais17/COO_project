@@ -40,9 +40,9 @@ public class ChatWindow {
 	private JScrollPane scrollPane;
 	private WindowAdapter windowAdapter = null;
 	private JTextArea textArea;
-	private TCPConnect tcp_receiver_session;
+	//private TCPConnect tcp_receiver_session;
 	private TCPThread currentThread;
-	private TCPThread currentThread2;
+	//private TCPThread currentThread2;
 	/**
 	 * Launch the application.
 	 */
@@ -71,18 +71,18 @@ public class ChatWindow {
 		System.out.println("Session tcp started"); */
 		
 		//TEST
-		tcp_receiver_session = new TCPConnect(receiver);
-		tcp_receiver_session.start();
+		//tcp_receiver_session = new TCPConnect(receiver);
+		//tcp_receiver_session.start();
 		
 		tcp_session.connectTo(receiver);
-		tcp_receiver_session.connectTo(sender);
+		//tcp_receiver_session.connectTo(sender);
 		currentThread = tcp_session.getTCPThreadWith(receiver);
 		System.out.println("found thread");
 		currentThread.setCurrentChat(this);
 		
-		currentThread2 = tcp_receiver_session.getTCPThreadWith(sender);
+		//currentThread2 = tcp_receiver_session.getTCPThreadWith(sender);
 		System.out.println("found thread");
-		currentThread2.setCurrentChat(this);
+		//currentThread2.setCurrentChat(this);
 		initialize();
 	}
 	
@@ -102,6 +102,7 @@ public class ChatWindow {
 	
 	public void displayMessage(String whoSent,String m){
 		textArea.append(whoSent + ": " + m + "\n");
+		
 	}
 	
 	/**
@@ -125,7 +126,7 @@ public class ChatWindow {
 	        public void windowClosing(WindowEvent e) {
 	            super.windowClosing(e);
 	            tcp_session.closeThreadWith(receiver);
-				tcp_receiver_session.closeThreadWith(sender);                   
+				//tcp_receiver_session.closeThreadWith(sender);                   
 	        }
 
 	        // WINDOW_CLOSED event handler
@@ -173,14 +174,14 @@ public class ChatWindow {
 		frmChat.getContentPane().add(btnNewButton); 
 		
 		
-		JButton btnNewButton_1 = new JButton("test");
+		/*JButton btnNewButton_1 = new JButton("test");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tcp_receiver_session.sendMessage("Réponse!",sender);
 			}
 		});
 		btnNewButton_1.setBounds(21, 932, 89, 23);
-		frmChat.getContentPane().add(btnNewButton_1); 
+		frmChat.getContentPane().add(btnNewButton_1); */
 		
 		textArea = new JTextArea();
 		textArea.setTabSize(20);

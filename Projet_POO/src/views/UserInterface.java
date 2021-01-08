@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
@@ -168,22 +170,23 @@ public class UserInterface {
 		
 		comboBox = new JComboBox(connectedUsers);
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 21));
-		comboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
-				String receiverLogin = comboBox.getSelectedItem().toString();
-				User receiver = udp_session.getUserConnected(receiverLogin);
-				//si le chat n'est pas déjà ouvert, on l'ouvre
-				if (!chatStarted.containsKey(receiver)){
-					ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
-					chatStarted.put(receiver, chat);
-				} else {
-					//s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
-					frame.toBack();
-					chatStarted.get(receiver).putInFront();
-				}
-			}
-		});
+		comboBox.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent arg0) {
+                System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
+                String receiverLogin = comboBox.getSelectedItem().toString();
+                User receiver = udp_session.getUserConnected(receiverLogin);
+                //si le chat n'est pas déjà ouvert, on l'ouvre
+                if (!chatStarted.containsKey(receiver)){
+                    ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
+                    chatStarted.put(receiver, chat);
+                } else {
+                    //s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
+                    frame.toBack();
+                    chatStarted.get(receiver).putInFront();
+                }
+            }
+        });
 		comboBox.setBounds(42, 192, 159, 45);
 		
 		frame.getContentPane().add(comboBox);

@@ -7,18 +7,15 @@ import java.net.InetAddress;
 
 public class TestConnexions {
     public static void main(String[] args) throws IOException, InterruptedException {
-        User paul = new User("Paul");
-        User eva = new User("Eva");
-        User john = new User("John");
-        System.out.println(paul.getLogin()+": "+ paul.getPort()+ ", " + paul.getAddress());
-		System.out.println(eva.getLogin()+": "+eva.getPort() + ", "+ eva.getAddress());
-       UDPConnect udp1 = new UDPConnect(paul);
-        UDPConnect udp2 = new UDPConnect(eva);
-        UDPConnect udp3 = new UDPConnect(john);
+        User cel = new User("Celestin");
+        User trump = new User("Trump");
+        User bitch = new User("Bitch");
+        UDPConnect udp1 = new UDPConnect(cel);
+        UDPConnect udp2 = new UDPConnect(trump);
+        UDPConnect udp3 = new UDPConnect(bitch);
         udp1.start();
         udp2.start();
         udp3.start();
-        udp1.sendMessageBroadcast("Connected,Paul,"+paul.getPort(),eva.getPort());
         udp2.sleep(1000);
         udp1.sleep(1000);
         udp2.printConnectedUsers();

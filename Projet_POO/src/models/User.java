@@ -31,6 +31,13 @@ public class User {
 		this.address = InetAddress.getLocalHost();
 		this.port = p;
 	}
+	
+	public User(String l, Integer p, InetAddress address) throws UnknownHostException {
+		// TODO Auto-generated constructor stub
+		this.login=l;
+		this.address = address;
+		this.port = p;
+	}
 
 	public Integer obtainPort(){
 		 Random rand = new Random();

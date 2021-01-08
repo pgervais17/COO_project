@@ -28,10 +28,10 @@ public class LoginWindow {
 	private UDPConnect session_udp;
 	private User current_user;
 	//variables de test
-	private User testuser;
+	/*private User testuser;
 	private UDPConnect testudp;
 	private User testuser2;
-	private UDPConnect testudp2;
+	private UDPConnect testudp2;*/
 	
 	private UserInterface userinterface=null;
 	/**
@@ -78,12 +78,12 @@ public class LoginWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		testuser = new User("paul");
+		/*testuser = new User("paul");
 		testudp = new UDPConnect(testuser);
 		testudp.start();
 		testuser2 = new User("john");
 		testudp2 = new UDPConnect(testuser2);
-		testudp2.start();
+		testudp2.start();*/
 		
 		
 		frame = new JFrame();
@@ -119,10 +119,10 @@ public class LoginWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				create_new_user_session(login);
 				System.out.println(login+": "+ current_user.getPort()+ ", " + current_user.getAddress());
-				System.out.println(testuser.getLogin()+": "+testuser.getPort() + ", "+ testuser.getAddress());
 				//on demande aux autres utilisateurs de vérifier le login entré
-				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp.getPort());
-				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp2.getPort());
+				/*session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp.getPort());
+				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp2.getPort());*/
+				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort());
 				//Nécessaire pour laisser le temps aux utilisateurs d'envoyer leur login à session_udp et permettre à session_udp de traiter les réponses
 				try {
 					session_udp.sleep(100);
@@ -137,8 +137,8 @@ public class LoginWindow {
 				} 
 				//sinon getIsLoginValid renvoie true donc on peut prendre ce pseudo et se connecter
 				else {
-					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort(), testudp.getPort());
-					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort(), testudp2.getPort());
+					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort());
+					//session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort());
 					JOptionPane.showMessageDialog(null,"Connection done! Your login is: "+session_udp.getLogin(),"Good",JOptionPane.INFORMATION_MESSAGE);
 					userinterface = new UserInterface(current_user, session_udp);
 					closeWindow();

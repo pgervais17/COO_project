@@ -64,6 +64,7 @@ public class TCPConnect extends Thread{
     public void connectTo(User u){
     	Socket s;
 		try {
+			System.out.println("Trying to start a tcp session with " + u.getLogin() + " on address " + u.getAddress().toString() + " on port " + u.getPort());
 			s = new Socket(u.getAddress(),u.getPort());
 			threads.add(new TCPThread(s));
 			threads.get(threads.size()-1).start();

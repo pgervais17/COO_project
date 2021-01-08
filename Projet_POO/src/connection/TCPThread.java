@@ -60,16 +60,22 @@ public class TCPThread extends Thread{
        
     }
 	
+	public void afficher(String m){
+		this.chat.displayMessage("", m);
+	}
+	
 	public void run(){
 		try {
 			while(this.running) {
 				//Socket socket_server = server.accept();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String message = reader.readLine();
+				
 				if (!message.equals(null)) {
-					System.out.println(message);
+					System.out.println("message recu : " + message);
 					this.chat.displayMessage("", message);
-				}
+					
+				};
 				//String messageReceived = reader.readLine();
 				//chat.displayMessage(this.login,messageReceived);
 				
