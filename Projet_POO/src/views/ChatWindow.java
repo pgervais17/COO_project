@@ -159,7 +159,7 @@ public class ChatWindow {
 				message = textField.getText();
 			}
 		});
-		textField.setBounds(468, 916, 969, 74);
+		textField.setBounds(480, 605, 969, 74);
 		frmChat.getContentPane().add(textField);
 		textField.setColumns(10);
 		
@@ -182,7 +182,7 @@ public class ChatWindow {
 				}
 			}
 		});
-		btnNewButton.setBounds(1497, 939, 98, 29);
+		btnNewButton.setBounds(1025, 758, 98, 29);
 		frmChat.getContentPane().add(btnNewButton); 
 		
 		
@@ -204,7 +204,7 @@ public class ChatWindow {
 		textArea.setBounds(141, 71, 89, 60);
 		
 		JScrollPane scrollPane_1 = new JScrollPane(textArea);
-		scrollPane_1.setBounds(66, 36, 1784, 800);
+		scrollPane_1.setBounds(66, 36, 1410, 533);
 		frmChat.getContentPane().add(scrollPane_1);
 		
 		
