@@ -99,7 +99,17 @@ public class UDPConnect extends Thread {
     	}
     	return result;
     }
- 
+    //method used to find a user by its login
+    public User getUserByName(String name){
+    	User result = null;
+    	for (User u : getConnectedUsers()){
+    		if (u.getLogin().equals(name)){
+    			result = u;
+    			break;
+    		}
+    	}
+    	return result;
+    }
     public void printConnectedUsers(){
     	System.out.println("Table des utilisateurs connectés de " + getLogin());
     	for (User u : this.connectedUsers) {

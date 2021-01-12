@@ -73,7 +73,7 @@ public class UserInterface {
 		this.udp_session = session;
 		this.udp_session.setUserInterface(this);
 		System.out.println("user interface set to "  + this.udp_session.getUserInterface());
-		this.tcp_session = new TCPConnect(u);
+		this.tcp_session = new TCPConnect(u,this);
 		this.tcp_session.start();
 
 		
@@ -87,8 +87,8 @@ public class UserInterface {
 	public void set_UDPsession(UDPConnect u) { 
 		this.udp_session=u;
 	}
-	
-	public void ListConnect() {
+	public UDPConnect get_UDPsession() { 
+		return this.udp_session;
 	}
 	
 	public void updateListUsersAvailable() {
@@ -172,19 +172,20 @@ public class UserInterface {
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		comboBox.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseExited(MouseEvent arg0) {
+            public void mouseClicked(MouseEvent arg0) {
                 System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
                 String receiverLogin = comboBox.getSelectedItem().toString();
                 User receiver = udp_session.getUserConnected(receiverLogin);
+                
                 //si le chat n'est pas déjà ouvert, on l'ouvre
                 if (!chatStarted.containsKey(receiver)){
                     ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
                     chatStarted.put(receiver, chat);
-                } else {
-                    //s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
-                    frame.toBack();
-                    chatStarted.get(receiver).putInFront();
-                }
+                }// else {
+//                    //s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
+//                    frame.toBack();
+//                    chatStarted.get(receiver).putInFront();
+//                }
             }
         });
 		comboBox.setBounds(42, 192, 159, 45);

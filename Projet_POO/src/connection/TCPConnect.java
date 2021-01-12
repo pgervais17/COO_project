@@ -2,6 +2,7 @@ package connection;
 
 import models.User;
 import views.ChatWindow;
+import views.UserInterface;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -19,13 +20,15 @@ public class TCPConnect extends Thread{
     private Integer port;
     private String login;
     private ServerSocket server;
+    private UserInterface userInterface;
     private ArrayList<TCPThread> threads = new ArrayList<TCPThread>();
   
-    public TCPConnect(User user) {
+    public TCPConnect(User user, UserInterface ui) {
         this.address = user.getAddress();
         this.port = user.getPort();
         this.login = user.getLogin();
         this.currentUser = user;
+        this.userInterface = ui;
     }
     public void closeSession(){
     	
@@ -49,6 +52,9 @@ public class TCPConnect extends Thread{
 		
     }
     
+    public UserInterface getUserInterface(){
+    	return this.userInterface;
+    }
     public void closeThreadWith(User u){
     	getTCPThreadWith(u).close();
     }
@@ -61,15 +67,20 @@ public class TCPConnect extends Thread{
     }
     
     //function used to start a TCP connection with a user
-    public void connectTo(User u){
+    public void connectTo(User u,ChatWindow chat){
     	Socket s;
 		try {
 			System.out.println("Trying to start a tcp session with " + u.getLogin() + " on address " + u.getAddress().toString() + " on port " + u.getPort());
 			s = new Socket(u.getAddress(),u.getPort());
-			threads.add(new TCPThread(s));
+			threads.add(new TCPThread(s,chat,u.getLogin()));
 			threads.get(threads.size()-1).start();
+			Thread.sleep(2000);
+			threads.get(threads.size()-1).sendNickname(this.login);
 			System.out.println("Connection between " + this.login + " and " + u.getLogin());
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -78,8 +89,10 @@ public class TCPConnect extends Thread{
     
     public void sendMessage(String message, User receiver) {
     	TCPThread thread = null;
+    	System.out.println("Recherche du thread correspondant");
     	for (TCPThread t : threads) {
-    		if ((t.getAddress().equals(receiver.getAddress())) && (t.getPort().equals(receiver.getPort()))) {
+    		if (receiver.getLogin().equals(t.getReceiver())) {
+    			System.out.println("Thread trouvé");
     			//we found the good thread
     			thread = t;
     		}
@@ -104,7 +117,8 @@ public class TCPConnect extends Thread{
     	try {
     		server = new ServerSocket(port);
     		while(true){
-    			threads.add(new TCPThread(server.accept()));
+    			System.out.println("Received a tcp connection request. Opening a ChatWindow.");
+    			threads.add(new TCPThread(server.accept(), new ChatWindow(this.currentUser,this)));
     			threads.get(threads.size()-1).start();
     		}
     	} catch (SocketException se) {

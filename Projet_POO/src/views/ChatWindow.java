@@ -46,25 +46,25 @@ public class ChatWindow {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ChatWindow window = new ChatWindow(sender,receiver,tcp_session);
-					window.frmChat.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					ChatWindow window = new ChatWindow(sender,receiver,tcp_session);
+//					window.frmChat.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 	
 	/**
 	 * Create the application.
 	 */
 	public ChatWindow(User s, User r, TCPConnect user_tcp_session) {
 		setSender(s);
-		setReceiver(r);
+		this.receiver = r;
 		this.tcp_session = user_tcp_session;
 		/*tcp_session = new TCPConnect(sender);
 		tcp_session.start();
@@ -74,20 +74,24 @@ public class ChatWindow {
 		//tcp_receiver_session = new TCPConnect(receiver);
 		//tcp_receiver_session.start();
 		
-		tcp_session.connectTo(receiver);
+		tcp_session.connectTo(receiver,this);
 		//tcp_receiver_session.connectTo(sender);
-		currentThread = tcp_session.getTCPThreadWith(receiver);
-		System.out.println("found thread");
-		currentThread.setCurrentChat(this);
-		
+//		currentThread = tcp_session.getTCPThreadWith(receiver);
+//		
+//		currentThread.setCurrentChat(this);
 		//currentThread2 = tcp_receiver_session.getTCPThreadWith(sender);
-		System.out.println("found thread");
+		
 		//currentThread2.setCurrentChat(this);
 		initialize();
 	}
-	
+	public ChatWindow(User s, TCPConnect user_tcp_session) {
+		setSender(s);
+		this.tcp_session = user_tcp_session;
+		initialize();
+	}
+
 	//used to put the frame back in front when it was minimized
-		public void putInFront(){
+		public void putInFront() {
 			frmChat.setState(Frame.NORMAL);
 			frmChat.toFront();
 			frmChat.setVisible(true);
@@ -96,8 +100,10 @@ public class ChatWindow {
 	public void setSender(User u) {
 		sender = u;
 	}
-	public void setReceiver(User u) {
-		receiver = u;
+	public void setReceiver(String name) {
+		System.out.println("Tried to change ChatWindow title");
+		this.receiver = tcp_session.getUserInterface().get_UDPsession().getUserByName(name);
+		frmChat.setTitle("Chat with " + receiver.getLogin());
 	}
 	
 	public void displayMessage(String whoSent,String m){
@@ -110,7 +116,10 @@ public class ChatWindow {
 	 */
 	private void initialize() {
 		frmChat = new JFrame();
-		frmChat.setTitle("Chat with " + receiver.getLogin());
+		
+		if (this.receiver != null) {
+			frmChat.setTitle("Chat with " + receiver.getLogin());
+		}
 		
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int longueur = d.width *2/3;
@@ -158,9 +167,12 @@ public class ChatWindow {
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.out.println("On est entrés dans le send");
 				try {
 					if (message.length() > 0) {
+						System.out.println("Envoi du message " + message);
 						tcp_session.sendMessage(message, receiver);
+						System.out.println("Message envoyé");
 						//displayMessage(sender.getLogin(),message);
 						textField.setText(null);
 						message = "";

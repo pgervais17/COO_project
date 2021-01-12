@@ -14,12 +14,21 @@ import views.ChatWindow;
 public class TCPThread extends Thread{
 	private Socket socket;
 	private Boolean running = true;
+	private Boolean waitforUser;
 	private ChatWindow chat;
+	private String receiver;
 	
-	public TCPThread(Socket s) {
+	public TCPThread(Socket s,ChatWindow c, String r) {
 		this.socket = s;
-		
-	}
+		this.chat = c;
+		this.receiver = r;
+		this.waitforUser = false;
+		}
+	public TCPThread(Socket s,ChatWindow c) {
+		this.socket = s;
+		this.chat = c;
+		this.waitforUser = true;
+		}
 	public void setCurrentChat(ChatWindow c) {
 		this.chat = c;
 		System.out.println("Chat set to " + c);
@@ -46,11 +55,23 @@ public class TCPThread extends Thread{
 		return socket.getPort();
 	}
 	
+	public void sendNickname(String message) {
+		try {
+			 PrintWriter writer = new PrintWriter(socket.getOutputStream(),true);
+		     writer.write(message+"\n");
+		     writer.flush();
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();	
+		}
+	}
+	
 	public void sendMessage(String message,User sender) {
 		try {
 			 PrintWriter writer = new PrintWriter(socket.getOutputStream(),true);
 		     writer.write(message+"\n");
 		     writer.flush();
+		     //System.out.println(this.chat);
 		     this.chat.displayMessage(sender.getLogin(), message);
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -63,7 +84,9 @@ public class TCPThread extends Thread{
 	public void afficher(String m){
 		this.chat.displayMessage("", m);
 	}
-	
+	public ChatWindow getChat() {
+		return this.chat;
+	}
 	public void run(){
 		try {
 			while(this.running) {
@@ -72,10 +95,19 @@ public class TCPThread extends Thread{
 				String message = reader.readLine();
 				
 				if (!message.equals(null)) {
-					System.out.println("message recu : " + message);
-					this.chat.displayMessage("", message);
-					
-				};
+					if (this.waitforUser) {
+						System.out.println("Received a nickname for ChatWindow config : " + message);
+						//message = name of the receiver
+						chat.setReceiver(message);
+						this.receiver = message;
+						this.waitforUser = false;
+					}
+					else {
+						System.out.println("message recu : " + message);
+						System.out.println(getChat());
+						chat.displayMessage(receiver, message);
+					}
+				}
 				//String messageReceived = reader.readLine();
 				//chat.displayMessage(this.login,messageReceived);
 				
@@ -92,5 +124,8 @@ public class TCPThread extends Thread{
         
       
 }
+	public String getReceiver() {
+		return this.receiver;
+	}
 		
 }
