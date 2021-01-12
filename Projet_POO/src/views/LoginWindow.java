@@ -125,7 +125,7 @@ public class LoginWindow {
 				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort());
 				//Nécessaire pour laisser le temps aux utilisateurs d'envoyer leur login à session_udp et permettre à session_udp de traiter les réponses
 				try {
-					session_udp.sleep(100);
+					session_udp.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

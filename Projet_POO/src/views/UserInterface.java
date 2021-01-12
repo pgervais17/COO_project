@@ -32,7 +32,12 @@ import java.awt.Toolkit;
 import javax.swing.JTextPane;
 import java.awt.Font;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class UserInterface {
 
@@ -49,7 +54,8 @@ public class UserInterface {
 	private HashMap<User,ChatWindow> chatStarted = new HashMap<User,ChatWindow>();
 	private String[] connectedUsers = null;
 	private JComboBox comboBox;
-
+	private String newlogin = null;
+	private JLabel lblMylogin;
 	/**
 	 * Launch the application.
 	 */
@@ -93,11 +99,22 @@ public class UserInterface {
 	
 	public void updateListUsersAvailable() {
 		this.connectedUsers = this.udp_session.getConnectedUsersName();
+		comboBox.removeAllItems();
 		for (String username : this.connectedUsers){
 			if(((DefaultComboBoxModel)comboBox.getModel()).getIndexOf(username) == -1) {
 				this.comboBox.addItem(username);
 			}	
 		}
+	}
+	
+	public JComboBox createComboBox(String[] listusers){
+		JComboBox result = new JComboBox();
+		result.addItem("Select user");
+		for (String username : listusers){
+			result.addItem(username);
+		}
+		return result;
+		
 	}
 	/**
 	 * Initialize the contents of the frame.
@@ -145,49 +162,90 @@ public class UserInterface {
 		frame.getContentPane().add(lblNewLabel);
 		
 		txtChangeYourLogin = new JTextField();
-		txtChangeYourLogin.setFont(new Font("Tahoma", Font.PLAIN, 21));
-		txtChangeYourLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				login = txtChangeYourLogin.getText();
+		txtChangeYourLogin.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				newlogin = txtChangeYourLogin.getText();
+				
 			}
 		});
+		txtChangeYourLogin.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		txtChangeYourLogin.setBounds(1565, 82, 290, 40);
 		frame.getContentPane().add(txtChangeYourLogin);
 		txtChangeYourLogin.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Change");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("new login set to " + newlogin);
+				if (!newlogin.equals(null)){
+					udp_session.sendMessageBroadcast("VerifyNewLogin,"+login+","+user.getPort()+","+newlogin);
+					try {
+						udp_session.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//System.out.println(udp_session.getIsLoginValid());
+					//si le login est déjà pris : getIsLoginValid renvoie false
+					if (udp_session.getIsLoginValid().equals(false)){
+						JOptionPane.showMessageDialog(null,"This login is already used, please choose another one.","Error",JOptionPane.ERROR_MESSAGE);
+
+					} 
+					//sinon getIsLoginValid renvoie true donc on peut prendre ce pseudo
+					else {
+						udp_session.sendMessageBroadcast("NotifyChange,"+udp_session.getLogin()+","+udp_session.getPort()+","+newlogin);
+						login = newlogin;
+						udp_session.setLogin(login);
+						JOptionPane.showMessageDialog(null,"Login changed! Your new login is: "+udp_session.getLogin(),"Good",JOptionPane.INFORMATION_MESSAGE);
+						System.out.println(user.getLogin());
+						lblMylogin.setText(login);
+					}
+				}		
+			}
+		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		
 		btnNewButton.setBounds(1657, 138, 124, 40);
 		frame.getContentPane().add(btnNewButton);
 		
-		JLabel lblMylogin = new JLabel(user.getLogin());
+		lblMylogin = new JLabel(user.getLogin());
 		lblMylogin.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		lblMylogin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMylogin.setBounds(0, 0, 986, 37);
 		frame.getContentPane().add(lblMylogin);
 		this.connectedUsers = udp_session.getConnectedUsersName();
 		
-		comboBox = new JComboBox(connectedUsers);
+		//comboBox = new JComboBox(connectedUsers);
+		//comboBox.addItem("test");
+		comboBox = createComboBox(connectedUsers);
+		comboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent event) {
+				 if (event.getStateChange() == ItemEvent.SELECTED) {
+					 System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
+		                String receiverLogin = comboBox.getSelectedItem().toString();
+		                System.out.println("selected value : " + receiverLogin);
+		                if (receiverLogin.equals("Select user")) {
+		                	System.out.println("cannot open chatbox, not a user");
+		                }
+		                else {
+		                	User receiver = udp_session.getUserConnected(receiverLogin);
+		                	ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
+		                //si le chat n'est pas déjà ouvert, on l'ouvre
+		                /*if (!chatStarted.containsKey(receiver)){
+		                    
+		                    chatStarted.put(receiver, chat);
+		                }// else {
+//		                    //s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
+//		                    frame.toBack();
+//		                    chatStarted.get(receiver).putInFront();
+//		                }*/
+		                }
+			       }
+				
+			}
+		});
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 21));
-		comboBox.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent arg0) {
-                System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
-                String receiverLogin = comboBox.getSelectedItem().toString();
-                User receiver = udp_session.getUserConnected(receiverLogin);
-                
-                //si le chat n'est pas déjà ouvert, on l'ouvre
-                if (!chatStarted.containsKey(receiver)){
-                    ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
-                    chatStarted.put(receiver, chat);
-                }// else {
-//                    //s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
-//                    frame.toBack();
-//                    chatStarted.get(receiver).putInFront();
-//                }
-            }
-        });
 		comboBox.setBounds(42, 192, 159, 45);
 		
 		frame.getContentPane().add(comboBox);
