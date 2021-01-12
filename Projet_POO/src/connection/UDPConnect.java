@@ -38,6 +38,7 @@ class InfoMachine {
 public class UDPConnect extends Thread {
     private String login;
     private Integer port;
+    private User current_user;
     //port utilisé par tous les serveurs UDP pour écouter le broadcast
     private  InetAddress address;
     private ArrayList<User> connectedUsers = new ArrayList<User>();
@@ -48,11 +49,13 @@ public class UDPConnect extends Thread {
     private Boolean running=true;
     private Boolean isLoginValid = true;
     private UserInterface userInterface = null;
+    private String newLogin;
     
     public UDPConnect(User user){
         this.login = user.getLogin();
         this.port = user.getPort();
         this.address = user.getAddress();
+        this.current_user = user;
 
         try {
             socket_envoi = new DatagramSocket(this.port);
@@ -122,6 +125,10 @@ public class UDPConnect extends Thread {
     public String getLogin() {
         return login;
     }
+    public void setLogin(String l) {
+    	this.current_user.setLogin(l);
+    	this.login = l;
+    }
     public Integer getPort(){
     	return port;
     }
@@ -142,8 +149,21 @@ public class UDPConnect extends Thread {
     
     public void sendLogin(InetAddress ipdest, Integer portdest){
     	String m = "ToVerify,"+getLogin()+","+port.toString(); 
-    	//System.out.println(getLogin()+" is sending this: "+ m + " to address "+ ipdest +" on port "+ portdest);
+    	System.out.println(getLogin()+" is sending this: "+ m + " to address "+ ipdest +" on port "+ portdest);
         DatagramPacket message = new DatagramPacket(m.getBytes(),m.length(),ipdest,portdest);
+        try {
+			socket_envoi.send(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    //utilisée quand on veut changer de pseudo en cours d'application
+    public void sendNewLogin(String login,InetAddress ipdest){
+    	String m = "ToVerifyNewLogin,"+getLogin()+","+port.toString()+","+login; 
+    	System.out.println(getLogin()+" is sending this: "+ m + " to address "+ ipdest );
+        DatagramPacket message = new DatagramPacket(m.getBytes(),m.length(),ipdest,this.broadcastPort);
         try {
 			socket_envoi.send(message);
 		} catch (IOException e) {
@@ -186,7 +206,7 @@ public class UDPConnect extends Thread {
 
 
     public void sendMessageBroadcast(String message){
-    	//System.out.println(getLogin()+" is sending this: "+message+ " to port dest "+portdest);
+    	System.out.println(getLogin()+" is sending this: "+message);
         try {
                 //envoi d'un message en broadcast pour connaitre les users connectés
             getSocketEnvoi().setBroadcast(true);  	  
@@ -226,7 +246,7 @@ public class UDPConnect extends Thread {
                 
                 //we create a User with the sender's information
                 User client = new User(tokens[1],Integer.parseInt(tokens[2]), clientAddress);
-                System.out.println("Port reçu : " + tokens[2] + ", port de l'utilisateur courant : " + this.port);
+                //System.out.println("Port reçu : " + tokens[2] + ", port de l'utilisateur courant : " + this.port);
                 if (!tokens[2].equals(Integer.toString(this.port))){
                 	 System.out.println("Message recu: "+message);
                 	if(tokens[0].equals("Connected")) {
@@ -255,17 +275,50 @@ public class UDPConnect extends Thread {
                 		connectedUsers.remove(client);
                 	}
                 	else if (tokens[0].equals("Verify") ) {
-                		sendLogin(clientAddress,Integer.parseInt(tokens[2]));
+                		sendLogin(clientAddress,this.broadcastPort);
                 	}
                 	else if (tokens[0].equals("ToVerify")){
                 		if (tokens[1].equals(getLogin())){
                 			System.out.println("This login is already used");
                 			setIsLoginValid(false);
+                		} else{
+                			
+                		System.out.println("Login valid!");
+                		}
+                	}
+                	else if (tokens[0].equals("VerifyNewLogin") ){
+                		//on envoie ce message pour vérifier un nouveau login qui est tokens[3]
+                		
+                		sendNewLogin(tokens[3],clientAddress);
+                	}
+                	else if (tokens[0].equals("ToVerifyNewLogin")){
+                		if (tokens[3].equals(tokens[1])){
+                			System.out.println("This login is already used");
+                			setIsLoginValid(false);
+                			System.out.println(getIsLoginValid());
+                		} else{
+                			
+                		System.out.println("Login valid!");
+                		System.out.println(getIsLoginValid());
+                		}
+                	}
+                	else if (tokens[0].equals("NotifyChange")){
+                		//message particulier utilisé pour notifier un changement de pseudo
+                		//ici tokens[1] est l'ancien pseudo, tokens[3] est le nouveau pseudo
+                		String previousLogin = tokens[1];
+                		String newLogin = tokens[3];
+                		User u = getUserByName(previousLogin);
+                		u.setLogin(newLogin);
+                		
+                		//connectedUsers.remove(getUserByName(previousLogin));
+                		//connectedUsers.add(u);
+                		try {
+                			this.userInterface.updateListUsersAvailable();
+                		} catch (NullPointerException e){
+                		
                 		};
                 	}
-                	else {
-                		System.out.println("Login valid!");
-                	};
+                	
                         //System.out.println(getLogin() + ": J'ai reçu un message sur le port " + getPort() + ": " + message);
                 }
             } catch (SocketException se){

@@ -104,7 +104,7 @@ public class TCPConnect extends Thread{
     public TCPThread getTCPThreadWith(User u ){
     	TCPThread thread = null;
     	for (TCPThread t : threads) {
-    		if ((t.getAddress().equals(u.getAddress())) && (t.getPort().equals(u.getPort()))) {
+    		if (u.getLogin().equals(t.getReceiver())) {
     			//we found the good thread
     			thread = t;
     		}
