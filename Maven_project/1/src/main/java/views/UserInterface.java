@@ -76,6 +76,7 @@ public class UserInterface {
 	 */
 	public UserInterface(User u, UDPConnect session) {
 		this.user=u;
+		this.login = this.user.getLogin();
 		this.udp_session = session;
 		this.udp_session.setUserInterface(this);
 		System.out.println("user interface set to "  + this.udp_session.getUserInterface());
@@ -137,6 +138,7 @@ public class UserInterface {
 	        @Override
 	        public void windowClosing(WindowEvent e) {
 	            super.windowClosing(e);
+	            udp_session.sendMessageBroadcast("Disconnected," + login + "," + user.getPort());
 	            udp_session.closeSession();    
 	            tcp_session.closeSession();
 	        }
@@ -190,7 +192,8 @@ public class UserInterface {
 					//si le login est déjà pris : getIsLoginValid renvoie false
 					if (udp_session.getIsLoginValid().equals(false)){
 						JOptionPane.showMessageDialog(null,"This login is already used, please choose another one.","Error",JOptionPane.ERROR_MESSAGE);
-
+						//on remet isLoginValid a true pour pouvoir retenter de changer de login
+						udp_session.setIsLoginValid(true);
 					} 
 					//sinon getIsLoginValid renvoie true donc on peut prendre ce pseudo
 					else {

@@ -273,6 +273,11 @@ public class UDPConnect extends Thread {
                 	}
                 	else if (tokens[0].equals("Disconnected")) {
                 		connectedUsers.remove(client);
+                		try {
+                			this.userInterface.updateListUsersAvailable();
+                		} catch (NullPointerException e){
+                		
+                		};
                 	}
                 	else if (tokens[0].equals("Verify") ) {
                 		sendLogin(clientAddress,this.broadcastPort);
