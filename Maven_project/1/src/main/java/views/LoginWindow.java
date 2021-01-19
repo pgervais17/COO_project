@@ -64,8 +64,8 @@ public class LoginWindow {
 	 * Create the application.
 	 */
 	public LoginWindow() {
-		Database_config database = new Database_config();
-		database.configureDatabase();
+		//Database_config database = new Database_config();
+		//database.configureDatabase();
 		initialize();	
 	}
 	

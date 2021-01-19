@@ -101,11 +101,7 @@ public class UserInterface {
 	public void updateListUsersAvailable() {
 		this.connectedUsers = this.udp_session.getConnectedUsersName();
 		comboBox.removeAllItems();
-		for (String username : this.connectedUsers){
-			if(((DefaultComboBoxModel)comboBox.getModel()).getIndexOf(username) == -1) {
-				this.comboBox.addItem(username);
-			}	
-		}
+		comboBox = createComboBox(this.connectedUsers);
 	}
 	
 	public JComboBox createComboBox(String[] listusers){
