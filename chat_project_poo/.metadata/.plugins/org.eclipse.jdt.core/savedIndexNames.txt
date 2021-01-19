@@ -1,2 +1,0 @@
-INDEX VERSION 1.127+E:\Cours\COO_project\chat_project_poo\.metadata\.plugins\org.eclipse.jdt.core
-2248920655.index
