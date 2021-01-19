@@ -10,7 +10,7 @@ import java.sql.Statement;
 public class Database_UserInterface {
 
     private Connection connect;
-    private final static String url = "jdbc:mysql://localhost:3306/mabiblio";
+    private static String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
   
     
     /*
@@ -46,10 +46,14 @@ public class Database_UserInterface {
     *
     *   @throws SQLException if SQL error.
      */
-    private void doConnect() throws ClassNotFoundException, SQLException {
+    public static void doConnect() throws ClassNotFoundException, SQLException {
 
         try {
-            connect = DriverManager.getConnection(url);
+        		Class.forName("com.mysql.jdbc.Driver");
+
+        		Connection con=DriverManager.getConnection("jdbc:mysql://srv-bdens.insa-toulouse.fr:3306/tp_servlet_021","tp_servlet_021","tooPei9P");
+        		//here sonoo is the database name, root is the username and root is the password
+
         }
         catch (SQLException e) {
             System.out.println("Impossible de se connecter à la base de données");
@@ -95,7 +99,7 @@ public class Database_UserInterface {
     *
     *   @throws SQLException if SQL error.
      */
-    public boolean signIn(int id) throws SQLException, ClassNotFoundException {
+   /* public boolean signIn(int id) throws SQLException, ClassNotFoundException {
 
         doConnect();
 
@@ -112,5 +116,14 @@ public class Database_UserInterface {
         	statement.close();
             return false; // user does not exists
         }
+    }*/
+    
+    public static void main (String args[] ) {
+    	try {
+    		doConnect();
+    	}
+    	catch (Exception e) {
+    		System.out.println(e);
+    	}
     }
 }

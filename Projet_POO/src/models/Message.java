@@ -1,15 +1,15 @@
 package models;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 
 public class Message{
 	private Timestamp timestamp;
-	private int sender;
-	private int receiver;
-	private String text;
+	private String sender;
+	private String receiver;
+	private String content;
 	
-	public Message(int u1, int u2, String content, Timestamp date) {
+	public Message(String u1, String u2, String content, Timestamp date) {
 		Set_Sender(u1);
 		Set_Receiver(u2);
 		Set_Content(content);
@@ -18,11 +18,11 @@ public class Message{
 			
 	
 	}
-	public void Set_Sender(int s) {
+	public void Set_Sender(String s) {
 		this.sender=s;
 	}
 	
-	public void Set_Receiver(int r) {
+	public void Set_Receiver(String r) {
 		this.receiver=r;
 	}
 	
@@ -30,15 +30,15 @@ public class Message{
 		this.timestamp=t;
 	}
 	
-	public void Set_Content(String content) {
-		this.text=content;
+	public void Set_Content(String c) {
+		this.content=c;
 	}
 	
-	public int Get_Sender() {
+	public String Get_Sender() {
 		return sender;
 	}
 	
-	public int Get_Receiver() {
+	public String Get_Receiver() {
 		return receiver;
 	}
 		
@@ -47,6 +47,6 @@ public class Message{
 	}
 	
 	public String Get_Content() {
-		return text;
+		return content;
 	}
 }

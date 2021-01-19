@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.net.UnknownHostException;
 import java.awt.event.ActionEvent;
 import connection.UDPConnect;
+import database.Database_config;
 import models.User;
 import java.awt.Font;
 
@@ -27,11 +28,7 @@ public class LoginWindow {
 	private String login;
 	private UDPConnect session_udp;
 	private User current_user;
-	//variables de test
-	/*private User testuser;
-	private UDPConnect testudp;
-	private User testuser2;
-	private UDPConnect testudp2;*/
+
 	
 	private UserInterface userinterface=null;
 	/**
@@ -67,7 +64,9 @@ public class LoginWindow {
 	 * Create the application.
 	 */
 	public LoginWindow() {
-		initialize();
+		Database_config database = new Database_config();
+		database.configureDatabase();
+		initialize();	
 	}
 	
 	public void closeWindow() {

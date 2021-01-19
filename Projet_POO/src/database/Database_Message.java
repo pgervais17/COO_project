@@ -12,7 +12,7 @@ import models.Message;
 public class Database_Message {
 
     private Connection connect;
-    private final static String url = "jdbc:mysql://localhost:3306/mabiblio";
+    private static String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
 
     
     /*
@@ -26,7 +26,7 @@ public class Database_Message {
     private void doConnect() throws ClassNotFoundException, SQLException {
 
         try {
-            connect = DriverManager.getConnection(url);
+            connect = DriverManager.getConnection(JDBC_DRIVER);
         }
         catch (SQLException e) {
             System.out.println("Erreur lors de la connexion à  la base de données");
@@ -42,7 +42,7 @@ public class Database_Message {
     *   
     *   @throws SQLException if SQL error.
      */
-    public ArrayList<Message> getHistory(int idLocal, int idDistant) throws SQLException, ClassNotFoundException {
+    public ArrayList<Message> getHistory(String local, String distant) throws SQLException, ClassNotFoundException {
     	
     	Message message;
     	ArrayList<Message> history = new ArrayList<Message>();
@@ -52,11 +52,11 @@ public class Database_Message {
         Statement statement = connect.createStatement(); // create the statement object
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
 
-        ResultSet rs = statement.executeQuery("select * from messages where (recipient = '" + Integer.toString(idLocal) + "' and transmitter = '" + Integer.toString(idDistant) + "')" +
-        		"or where (recipient = '" + Integer.toString(idDistant) + "' and transmitter = '" + Integer.toString(idLocal) + "')");
+        ResultSet rs = statement.executeQuery("SELECT * FROM messages WHERE (receiver = '" + local + "' and sender = '" + distant + "')" +
+        		"or where (receiver = '" + distant +"' and sender = '" + local + "')");
 
         while(rs.next()) {
-        	message = new Message(rs.getInt("u1"), rs.getInt("u2"), rs.getString("content"), rs.getTimestamp("message_date")); 
+        	message = new Message(rs.getString("sender"), rs.getString("receiver"), rs.getString("content"), rs.getTimestamp("timestamp")); 
         	System.out.println(message);
         	history.add(message);
         }
@@ -67,7 +67,7 @@ public class Database_Message {
     }
     
     
-    public void appendHistory(int recipient, int transmitter, String content) throws SQLException, ClassNotFoundException {
+    public void appendHistory(String receiver, String sender, String content) throws SQLException, ClassNotFoundException {
     	
     	doConnect();
     	
@@ -75,9 +75,9 @@ public class Database_Message {
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
         
         statement.executeUpdate(
-        	"insert into messages (recipient, transmitter, content, message_date) values ('" + 
-        	recipient + "', '" + 
-        	transmitter + "', '" +
+        	"INSERT INTO messages (receiver, sender, content, timestamp) VALUES ('" + 
+        	receiver + "', '" + 
+        	sender + "', '" +
         	content + "', '" +
         	"NOW()" +
         	"')"
