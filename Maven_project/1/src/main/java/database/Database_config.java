@@ -29,7 +29,7 @@ public class Database_config {
 	        try {
 	        	Class.forName(JDBC_DRIVER);
 
-	        	con=DriverManager.getConnection("jdbc:mysql://srv-bdens.insa-toulouse.fr:3306/tp_servlet_021","tp_servlet_021","tooPei9P");     
+	        	con=DriverManager.getConnection("jdbc:mysql://db4free.net:3306/projet_poo1","minoteva","12345678");     
 	        	
 	            DatabaseMetaData meta = con.getMetaData();
 	            System.out.println("The driver name is " + meta.getDriverName());
