@@ -31,22 +31,17 @@ public class LoginWindow {
 
 	
 	private UserInterface userinterface=null;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoginWindow window = new LoginWindow();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
+	public LoginWindow() {
+		Database_config database = new Database_config();
+		database.configureDatabase();
+		initialize();	
+	}
+	
+	public void closeWindow() {
+		this.frame.setVisible(false);
+	}
+	
 	public void create_new_user_session(String l) {
 		Integer size = l.length();
 		if (!size.equals(0)) {
@@ -58,33 +53,12 @@ public class LoginWindow {
 		}
 		
 	}
-	
-	
-	/**
-	 * Create the application.
-	 */
-	public LoginWindow() {
-		Database_config database = new Database_config();
-		database.configureDatabase();
-		initialize();	
-	}
-	
-	public void closeWindow() {
-		this.frame.setVisible(false);
-	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		/*testuser = new User("paul");
-		testudp = new UDPConnect(testuser);
-		testudp.start();
-		testuser2 = new User("john");
-		testudp2 = new UDPConnect(testuser2);
-		testudp2.start();*/
-		
-		
+
 		frame = new JFrame();
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int longueur = d.width *2/3;
@@ -92,6 +66,8 @@ public class LoginWindow {
 		frame.setSize(d);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		frame.setVisible(true);
+		
 		
 		JLabel lblNewLabel = new JLabel("Please enter login");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 27));
@@ -119,8 +95,6 @@ public class LoginWindow {
 				create_new_user_session(login);
 				System.out.println(login+": "+ current_user.getPort()+ ", " + current_user.getAddress());
 				//on demande aux autres utilisateurs de vérifier le login entré
-				/*session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp.getPort());
-				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort(), testudp2.getPort());*/
 				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort());
 				//Nécessaire pour laisser le temps aux utilisateurs d'envoyer leur login à session_udp et permettre à session_udp de traiter les réponses
 				try {
@@ -137,7 +111,6 @@ public class LoginWindow {
 				//sinon getIsLoginValid renvoie true donc on peut prendre ce pseudo et se connecter
 				else {
 					session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort());
-					//session_udp.sendMessageBroadcast("Connected,"+login+","+current_user.getPort());
 					JOptionPane.showMessageDialog(null,"Connection done! Your login is: "+session_udp.getLogin(),"Good",JOptionPane.INFORMATION_MESSAGE);
 					userinterface = new UserInterface(current_user, session_udp);
 					closeWindow();

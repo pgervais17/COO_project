@@ -46,8 +46,8 @@ public class UserInterface {
 	
 	private String login;
 	
-	private static User user;
-	private static UDPConnect udp_session;
+	private User user;
+	private UDPConnect udp_session;
 	private TCPConnect tcp_session;
 	
 	private WindowAdapter windowAdapter = null;
@@ -60,7 +60,7 @@ public class UserInterface {
 	 * Launch the application.
 	 */
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -70,7 +70,7 @@ public class UserInterface {
 				}
 			}
 		});
-	}
+	}*/
 	/**
 	 * Create the application.
 	 */

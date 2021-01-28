@@ -38,57 +38,23 @@ import java.awt.Frame;
 public class ChatWindow {
 
 	private JFrame frmChat;
-	private static User sender;
-	private static User receiver;
-	private static TCPConnect tcp_session;
+	private User sender;
+	private User receiver;
+	private TCPConnect tcp_session;
 	private JTextField textField;
 	//for now we only consider messages as strings
 	private String message;
 	private JScrollPane scrollPane;
 	private WindowAdapter windowAdapter = null;
 	private JTextArea textArea;
-	//private TCPConnect tcp_receiver_session;
 	private TCPThread currentThread;
-	//private TCPThread currentThread2;
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					ChatWindow window = new ChatWindow(sender,receiver,tcp_session);
-//					window.frmChat.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 	
-	/**
-	 * Create the application.
-	 */
 	public ChatWindow(User s, User r, TCPConnect user_tcp_session) {
 		setSender(s);
 		this.receiver = r;
 		this.tcp_session = user_tcp_session;
-		/*tcp_session = new TCPConnect(sender);
-		tcp_session.start();
-		System.out.println("Session tcp started"); */
+		this.tcp_session.connectTo(receiver,this);
 		
-		//TEST
-		//tcp_receiver_session = new TCPConnect(receiver);
-		//tcp_receiver_session.start();
-		
-		tcp_session.connectTo(receiver,this);
-		//tcp_receiver_session.connectTo(sender);
-//		currentThread = tcp_session.getTCPThreadWith(receiver);
-//		
-//		currentThread.setCurrentChat(this);
-		//currentThread2 = tcp_receiver_session.getTCPThreadWith(sender);
-		
-		//currentThread2.setCurrentChat(this);
 		initialize();
 	}
 	public ChatWindow(User s, TCPConnect user_tcp_session) {
@@ -126,10 +92,8 @@ public class ChatWindow {
 				displayMessage(m.Get_Sender(),m.Get_Content());
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -158,18 +122,13 @@ public class ChatWindow {
 	        @Override
 	        public void windowClosing(WindowEvent e) {
 	            super.windowClosing(e);
-	            tcp_session.closeThreadWith(receiver);
-				//tcp_receiver_session.closeThreadWith(sender);                   
+	            tcp_session.closeThreadWith(receiver);                   
 	        }
 
 	        // WINDOW_CLOSED event handler
 	        @Override
 	        public void windowClosed(WindowEvent e) {
 	            super.windowClosed(e);
-	            // Close application if you want to with System.exit(0)
-	            // but don't forget to dispose of all resources 
-	            // like child frames, threads, ...
-	            // System.exit(0);
 	        }
 	    };
 	    
@@ -197,7 +156,6 @@ public class ChatWindow {
 						System.out.println("Envoi du message " + message);
 						tcp_session.sendMessage(message, receiver);
 						System.out.println("Message envoyé");
-						//displayMessage(sender.getLogin(),message);
 						textField.setText(null);
 						message = "";
 					}
@@ -208,17 +166,7 @@ public class ChatWindow {
 		});
 		btnNewButton.setBounds(1025, 758, 98, 29);
 		frmChat.getContentPane().add(btnNewButton); 
-		
-		
-		/*JButton btnNewButton_1 = new JButton("test");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tcp_receiver_session.sendMessage("Réponse!",sender);
-			}
-		});
-		btnNewButton_1.setBounds(21, 932, 89, 23);
-		frmChat.getContentPane().add(btnNewButton_1); */
-		
+			
 		textArea = new JTextArea();
 		textArea.setTabSize(20);
 		textArea.setFont(new Font("Monospaced", Font.PLAIN, 21));
@@ -229,11 +177,6 @@ public class ChatWindow {
 		
 		JScrollPane scrollPane_1 = new JScrollPane(textArea);
 		scrollPane_1.setBounds(66, 36, 1410, 533);
-		frmChat.getContentPane().add(scrollPane_1);
-		
-		
-		
-		
-		
+		frmChat.getContentPane().add(scrollPane_1);	
 	}
 }
