@@ -272,7 +272,7 @@ public class UDPConnect extends Thread {
                 		//printConnectedUsers();
                 	}
                 	else if (tokens[0].equals("Disconnected")) {
-                		System.out.println(connectedUsers.remove(client));
+                		System.out.println(connectedUsers.remove(getUserByName(client.getLogin())));
                 		System.out.println("Removing user " + client.getLogin() + " from connected users...");
                 		printConnectedUsers();
                 		try {

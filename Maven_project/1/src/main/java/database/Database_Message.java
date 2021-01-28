@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import models.Message;
@@ -67,12 +68,14 @@ public class Database_Message {
         Statement statement = Database_config.con.createStatement(); // create the statement object
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
         
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        
         statement.executeUpdate(
-        	"INSERT INTO messages (receiver, sender, content, timestamp) VALUES ('" + 
+        	"INSERT INTO messages (receiver, sender, content, message_date) VALUES ('" + 
         	receiver + "', '" + 
         	sender + "', '" +
         	content + "', '" +
-        	"NOW()" +
+        	timestamp +
         	"')"
         );
         

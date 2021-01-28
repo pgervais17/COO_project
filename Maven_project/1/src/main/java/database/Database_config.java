@@ -72,8 +72,8 @@ public class Database_config {
 
      // SQL statement for creating a new table
      String sql = "CREATE TABLE IF NOT EXISTS messages (\n"
-             + "	receiver INTEGER NOT NULL,\n"
-             + "	sender INTEGER NOT NULL,\n"
+             + "	receiver TEXT NOT NULL,\n"
+             + "	sender TEXT NOT NULL,\n"
              + "	content TEXT NOT NULL,\n"
              + "	message_date DATETIME NOT NULL,\n"
              + " capacity real \n"
