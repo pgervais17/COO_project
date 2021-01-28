@@ -11,10 +11,6 @@ import models.Message;
 
 public class Database_Message {
 
-    private Connection connect;
-    private static String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-
-    
     /*
     *   Create connection with the distant database,
     *   Save connection in class attributes.
@@ -23,7 +19,7 @@ public class Database_Message {
     *
     *   @throws SQLException if SQL error.
      */
-    private void doConnect() throws ClassNotFoundException, SQLException {
+    /*private void doConnect() throws ClassNotFoundException, SQLException {
 
         try {
             connect = DriverManager.getConnection(JDBC_DRIVER);
@@ -32,7 +28,7 @@ public class Database_Message {
             System.out.println("Erreur lors de la connexion à  la base de données");
             e.printStackTrace();
         }
-    }
+    }*/
     
     
     /*
@@ -43,13 +39,12 @@ public class Database_Message {
     *   @throws SQLException if SQL error.
      */
     public ArrayList<Message> getHistory(String local, String distant) throws SQLException, ClassNotFoundException {
-    	
+    	//local et distant sont des adresses ip
     	Message message;
     	ArrayList<Message> history = new ArrayList<Message>();
     	
-    	doConnect();
     	
-        Statement statement = connect.createStatement(); // create the statement object
+        Statement statement = Database_config.con.createStatement(); // create the statement object
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
 
         ResultSet rs = statement.executeQuery("SELECT * FROM messages WHERE (receiver = '" + local + "' and sender = '" + distant + "')" +
@@ -68,10 +63,8 @@ public class Database_Message {
     
     
     public void appendHistory(String receiver, String sender, String content) throws SQLException, ClassNotFoundException {
-    	
-    	doConnect();
-    	
-        Statement statement = connect.createStatement(); // create the statement object
+
+        Statement statement = Database_config.con.createStatement(); // create the statement object
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
         
         statement.executeUpdate(
@@ -82,6 +75,8 @@ public class Database_Message {
         	"NOW()" +
         	"')"
         );
+        
+        System.out.println("Ajout du message " + content + " à l'historique");
         statement.close();
     }
 }

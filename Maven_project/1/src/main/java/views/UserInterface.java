@@ -101,16 +101,15 @@ public class UserInterface {
 	public void updateListUsersAvailable() {
 		this.connectedUsers = this.udp_session.getConnectedUsersName();
 		comboBox.removeAllItems();
-		comboBox = createComboBox(this.connectedUsers);
+		createComboBox(this.connectedUsers);
 	}
 	
-	public JComboBox createComboBox(String[] listusers){
-		JComboBox result = new JComboBox();
-		result.addItem("Select user");
+	public void createComboBox(String[] listusers){
+		
+		comboBox.addItem("Select user");
 		for (String username : listusers){
-			result.addItem(username);
+			comboBox.addItem(username);
 		}
-		return result;
 		
 	}
 	/**
@@ -217,7 +216,8 @@ public class UserInterface {
 		
 		//comboBox = new JComboBox(connectedUsers);
 		//comboBox.addItem("test");
-		comboBox = createComboBox(connectedUsers);
+		comboBox = new JComboBox();
+		createComboBox(connectedUsers);
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				 if (event.getStateChange() == ItemEvent.SELECTED) {

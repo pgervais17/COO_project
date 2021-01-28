@@ -11,7 +11,7 @@ import java.sql.Statement;
 public class Database_config {
 
 	private static String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver"; 
-	private static Connection con;
+	public static Connection con;
 	
 	public void configureDatabase() {
 		createDatabase();

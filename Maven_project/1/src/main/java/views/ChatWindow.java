@@ -12,9 +12,13 @@ import javax.swing.JLabel;
 
 import connection.TCPConnect;
 import connection.TCPThread;
+import database.Database_Message;
 
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+
+import models.Message;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -23,6 +27,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import java.awt.Font;
@@ -108,6 +115,23 @@ public class ChatWindow {
 	
 	public void displayMessage(String whoSent,String m){
 		textArea.append(whoSent + ": " + m + "\n");
+		
+	}
+	
+	public void retrieveHistory() {
+		Database_Message db = this.tcp_session.getDatabase();
+		try {
+			ArrayList<Message> history = db.getHistory(sender.getAddress().toString(), receiver.getAddress().toString());
+			for (Message m : history) {
+				displayMessage(m.Get_Sender(),m.Get_Content());
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

@@ -9,7 +9,10 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import database.Database_Message;
 
 
 	
@@ -22,6 +25,7 @@ public class TCPConnect extends Thread{
     private ServerSocket server;
     private UserInterface userInterface;
     private ArrayList<TCPThread> threads = new ArrayList<TCPThread>();
+    private Database_Message db_message;
   
     public TCPConnect(User user, UserInterface ui) {
         this.address = user.getAddress();
@@ -29,6 +33,7 @@ public class TCPConnect extends Thread{
         this.login = user.getLogin();
         this.currentUser = user;
         this.userInterface = ui;
+        this.db_message = new Database_Message();
     }
     public void closeSession(){
     	
@@ -65,6 +70,12 @@ public class TCPConnect extends Thread{
     public Integer getPort(){
     	return this.port;
     }
+    public User getCurrentUser() {
+    	return this.currentUser;
+    }
+    public Database_Message getDatabase() {
+    	return this.db_message;
+    }
     
     //function used to start a TCP connection with a user
     public void connectTo(User u,ChatWindow chat){
@@ -72,7 +83,7 @@ public class TCPConnect extends Thread{
 		try {
 			System.out.println("Trying to start a tcp session with " + u.getLogin() + " on address " + u.getAddress().toString() + " on port " + u.getPort());
 			s = new Socket(u.getAddress(),u.getPort());
-			threads.add(new TCPThread(s,chat,u.getLogin()));
+			threads.add(new TCPThread(this,s,chat,u.getLogin()));
 			threads.get(threads.size()-1).start();
 			Thread.sleep(2000);
 			threads.get(threads.size()-1).sendNickname(this.login);
@@ -97,7 +108,17 @@ public class TCPConnect extends Thread{
     			thread = t;
     		}
     	}
-    	thread.sendMessage(message,currentUser);
+    	thread.sendMessage(message);
+    	
+    	try {
+			this.db_message.appendHistory(receiver.getAddress().toString(),this.currentUser.getAddress().toString(), message);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}
 
     }
     
@@ -117,8 +138,7 @@ public class TCPConnect extends Thread{
     	try {
     		server = new ServerSocket(port);
     		while(true){
-    			System.out.println("Received a tcp connection request. Opening a ChatWindow.");
-    			threads.add(new TCPThread(server.accept(), new ChatWindow(this.currentUser,this)));
+    			threads.add(new TCPThread(this,server.accept(), new ChatWindow(this.currentUser,this)));
     			threads.get(threads.size()-1).start();
     		}
     	} catch (SocketException se) {

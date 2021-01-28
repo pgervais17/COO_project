@@ -9,10 +9,6 @@ import java.sql.Statement;
 
 public class Database_UserInterface {
 
-    private Connection connect;
-    private static String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-  
-    
     /*
     *   Check if a user with the given id exists in the database
     *
@@ -23,7 +19,7 @@ public class Database_UserInterface {
     private boolean doesUserExist(int id) throws SQLException {
 
         // check if ID already exists in the database
-        Statement statement = connect.createStatement(); // create the statement object
+        Statement statement = Database_config.con.createStatement(); // create the statement object
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
 
         ResultSet res = statement.executeQuery("SELECT * FROM users WHERE id = '" + Integer.toString(id) + "'");
@@ -46,7 +42,7 @@ public class Database_UserInterface {
     *
     *   @throws SQLException if SQL error.
      */
-    public static void doConnect() throws ClassNotFoundException, SQLException {
+    /*public static void doConnect() throws ClassNotFoundException, SQLException {
 
         try {
         		Class.forName("com.mysql.jdbc.Driver");
@@ -59,7 +55,7 @@ public class Database_UserInterface {
             System.out.println("Impossible de se connecter à la base de données");
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     /*
@@ -72,11 +68,8 @@ public class Database_UserInterface {
     *   @throws SQLException if SQL error.
      */
     public boolean createUser(int id) throws SQLException, ClassNotFoundException {
-
-        doConnect();
-
         // check if ID already exists in the database
-        Statement statement = connect.createStatement(); // create the statement object
+        Statement statement = Database_config.con.createStatement(); // create the statement object
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
 
         if(!doesUserExist(id)){
@@ -118,12 +111,5 @@ public class Database_UserInterface {
         }
     }*/
     
-    public static void main (String args[] ) {
-    	try {
-    		doConnect();
-    	}
-    	catch (Exception e) {
-    		System.out.println(e);
-    	}
-    }
+    
 }
