@@ -78,6 +78,7 @@
 	</section>
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="D:\Cours\4IR\POO\git\COO_project\Maven_project"/>
 			<item value="E:\Cours\COO_project\Maven_project"/>
 		</list>
 		<list key="projectNameTemplate">

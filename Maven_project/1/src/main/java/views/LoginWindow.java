@@ -28,7 +28,6 @@ public class LoginWindow {
 	private String login;
 	private UDPConnect session_udp;
 	private User current_user;
-
 	
 	private UserInterface userinterface=null;
 
@@ -58,12 +57,14 @@ public class LoginWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-
 		frame = new JFrame();
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int longueur = d.width *2/3;
-		int hauteur = d.height *2/3;
-		frame.setSize(d);
+		//récuperer la dimension de l'écran
+		Dimension tailleMoniteur = Toolkit.getDefaultToolkit().getScreenSize();
+		int longueur = tailleMoniteur.width;
+		int hauteur = tailleMoniteur.height;
+		//régler la taille de JFrame à 2/3 la taille de l'écran
+		frame.setBounds(0, 0, longueur,hauteur);
+
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setVisible(true);
@@ -92,8 +93,17 @@ public class LoginWindow {
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				create_new_user_session(login);
-				System.out.println(login+": "+ current_user.getPort()+ ", " + current_user.getAddress());
+				//il faut différencier le cas où on clique sur log in pour lere fois ou si on a déjà cliqué avant
+				//car la première fois, on crée un user et une session udp, les autres fois il faut juste changer les logins
+				if (session_udp == null) {
+					create_new_user_session(login);
+					System.out.println("Une session a été créée pour l'utilisateur " + login + " (à vérifier)");
+				}
+				else {
+					System.out.println("Une session a déjà été créée mais a échoué, on change juste le login");
+					current_user.setLogin(login);
+					session_udp.setLogin(login);
+				}
 				//on demande aux autres utilisateurs de vérifier le login entré
 				session_udp.sendMessageBroadcast("Verify,"+login+","+current_user.getPort());
 				//Nécessaire pour laisser le temps aux utilisateurs d'envoyer leur login à session_udp et permettre à session_udp de traiter les réponses
@@ -106,7 +116,8 @@ public class LoginWindow {
 				//si le login est déjà pris : getIsLoginValid renvoie false
 				if (session_udp.getIsLoginValid().equals(false)){
 					JOptionPane.showMessageDialog(null,"This login is already used, please choose another one.","Error",JOptionPane.ERROR_MESSAGE);
-
+					//On remet isLoginValid à true, sinon getIsLoginValid renverra toujours false
+					session_udp.setIsLoginValid(true);
 				} 
 				//sinon getIsLoginValid renvoie true donc on peut prendre ce pseudo et se connecter
 				else {

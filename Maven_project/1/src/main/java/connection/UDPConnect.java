@@ -247,7 +247,7 @@ public class UDPConnect extends Thread {
                 //we create a User with the sender's information
                 User client = new User(tokens[1],Integer.parseInt(tokens[2]), clientAddress);
                 //System.out.println("Port reçu : " + tokens[2] + ", port de l'utilisateur courant : " + this.port);
-                if (!tokens[2].equals(Integer.toString(this.port))){
+                if (!tokens[2].equals(Integer.toString(this.port)) && !clientAddress.equals(this.address)){
                 	 System.out.println("Message recu: "+message);
                 	if(tokens[0].equals("Connected")) {
                 		//ajout de l'utilisateur venant de se connecter

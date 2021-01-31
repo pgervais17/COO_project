@@ -49,7 +49,7 @@ public class Database_Message {
         statement.setQueryTimeout(10);  // set timeout to 10 sec.
 
         ResultSet rs = statement.executeQuery("SELECT * FROM messages WHERE (receiver = '" + local + "' and sender = '" + distant + "')" +
-        		"or where (receiver = '" + distant +"' and sender = '" + local + "')");
+        		"or (receiver = '" + distant +"' and sender = '" + local + "')");
 
         while(rs.next()) {
         	message = new Message(rs.getString("sender"), rs.getString("receiver"), rs.getString("content"), rs.getTimestamp("timestamp")); 
@@ -71,7 +71,7 @@ public class Database_Message {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         
         statement.executeUpdate(
-        	"INSERT INTO messages (receiver, sender, content, message_date) VALUES ('" + 
+        	"INSERT INTO messages (receiver, sender, content, timestamp) VALUES ('" + 
         	receiver + "', '" + 
         	sender + "', '" +
         	content + "', '" +

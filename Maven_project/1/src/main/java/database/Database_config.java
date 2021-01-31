@@ -15,7 +15,6 @@ public class Database_config {
 	
 	public void configureDatabase() {
 		createDatabase();
-		createUserTable();
 		createMessageTable();
 	}
 	
@@ -29,7 +28,7 @@ public class Database_config {
 	        try {
 	        	Class.forName(JDBC_DRIVER);
 
-	        	con=DriverManager.getConnection("jdbc:mysql://db4free.net:3306/projet_poo1","minoteva","12345678");     
+	        	con=DriverManager.getConnection("jdbc:mysql://db4free.net:3306/chat_project","evaminot","12345678");     
 	        	
 	            DatabaseMetaData meta = con.getMetaData();
 	            System.out.println("The driver name is " + meta.getDriverName());
@@ -43,26 +42,6 @@ public class Database_config {
 			}
 	    }
 	    
-	    /*
-	     * Create the user table in the local database
-	     */
-	     public static void createUserTable() {
-
-	         // SQL statement for creating a new table
-	         String sql = "CREATE TABLE IF NOT EXISTS users (\n"
-	                 + "	id INTEGER PRIMARY KEY NOT NULL,\n"
-	                 + " capacity real \n"
-	                 + ");";
-	         
-	         try {
-	             Statement stmt = con.createStatement();
-	             // creation of a new table
-	             stmt.execute(sql);
-	             stmt.close();
-	         } catch (SQLException e) {
-	             System.out.println(e.getMessage());
-	         }
-	     }
 
 
 /*
@@ -75,7 +54,7 @@ public class Database_config {
              + "	receiver TEXT NOT NULL,\n"
              + "	sender TEXT NOT NULL,\n"
              + "	content TEXT NOT NULL,\n"
-             + "	message_date DATETIME NOT NULL,\n"
+             + "	timestamp DATETIME NOT NULL,\n"
              + " capacity real \n"
              + ");";
      

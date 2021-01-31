@@ -113,6 +113,7 @@ public class TCPThread extends Thread{
 						System.out.println("message recu : " + message);
 						System.out.println(getChat());
 						chat.displayMessage(receiver, message);
+						System.out.println(this.current_user.getAddress().toString() instanceof String);
 						this.session_tcp.getDatabase().appendHistory(this.current_user.getAddress().toString(), this.socket.getInetAddress().toString() , message);
 					}
 				}

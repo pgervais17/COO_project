@@ -88,6 +88,7 @@ public class ChatWindow {
 		Database_Message db = this.tcp_session.getDatabase();
 		try {
 			ArrayList<Message> history = db.getHistory(sender.getAddress().toString(), receiver.getAddress().toString());
+			System.out.println("Retrieving previous messages...");
 			for (Message m : history) {
 				displayMessage(m.Get_Sender(),m.Get_Content());
 			}
@@ -109,10 +110,13 @@ public class ChatWindow {
 			frmChat.setTitle("Chat with " + receiver.getLogin());
 		}
 		
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int longueur = d.width *2/3;
-		int hauteur = d.height *2/3;
-		frmChat.setSize(d);
+		//récuperer la dimension de l'écran
+				Dimension tailleMoniteur = Toolkit.getDefaultToolkit().getScreenSize();
+				int longueur = tailleMoniteur.width;
+				int hauteur = tailleMoniteur.height;
+				//régler la taille de JFrame à 2/3 la taille de l'écran
+				frmChat.setBounds(0, 0, longueur,hauteur);
+
 		frmChat.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmChat.setVisible(true);
 		frmChat.getContentPane().setLayout(null);
@@ -134,6 +138,8 @@ public class ChatWindow {
 	    
 	    frmChat.addWindowListener(this.windowAdapter);
 		
+	    
+	    
 		textField = new JTextField();
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		textField.addKeyListener(new KeyAdapter() {
@@ -174,7 +180,9 @@ public class ChatWindow {
 		textArea.setLineWrap(true);
 		textArea.setVisible(true);
 		textArea.setBounds(141, 71, 89, 60);
-		
+		if (this.receiver != null) {
+			retrieveHistory();
+		}
 		JScrollPane scrollPane_1 = new JScrollPane(textArea);
 		scrollPane_1.setBounds(66, 36, 1410, 533);
 		frmChat.getContentPane().add(scrollPane_1);	

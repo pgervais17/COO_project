@@ -119,10 +119,13 @@ public class UserInterface {
 				
 		frame = new JFrame();
 	
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int longueur = d.width *2/3;
-		int hauteur = d.height *2/3;
-		frame.setSize(d);
+		//récuperer la dimension de l'écran
+				Dimension tailleMoniteur = Toolkit.getDefaultToolkit().getScreenSize();
+				int longueur = tailleMoniteur.width;
+				int hauteur = tailleMoniteur.height;
+				//régler la taille de JFrame à 2/3 la taille de l'écran
+				frame.setBounds(0, 0, longueur,hauteur);
+
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -155,7 +158,7 @@ public class UserInterface {
 		JLabel lblNewLabel = new JLabel("Change your login here");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(1565, 31, 272, 40);
+		lblNewLabel.setBounds(1100, 31, 272, 40);
 		frame.getContentPane().add(lblNewLabel);
 		
 		txtChangeYourLogin = new JTextField();
@@ -167,7 +170,7 @@ public class UserInterface {
 			}
 		});
 		txtChangeYourLogin.setFont(new Font("Tahoma", Font.PLAIN, 21));
-		txtChangeYourLogin.setBounds(1565, 82, 290, 40);
+		txtChangeYourLogin.setBounds(1100, 82, 290, 40);
 		frame.getContentPane().add(txtChangeYourLogin);
 		txtChangeYourLogin.setColumns(10);
 		
@@ -204,7 +207,7 @@ public class UserInterface {
 		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		
-		btnNewButton.setBounds(1657, 138, 124, 40);
+		btnNewButton.setBounds(1175, 138, 124, 40);
 		frame.getContentPane().add(btnNewButton);
 		
 		lblMylogin = new JLabel(user.getLogin());
