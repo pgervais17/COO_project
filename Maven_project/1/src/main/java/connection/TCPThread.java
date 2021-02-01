@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import models.User;
 import views.ChatWindow;
@@ -79,7 +80,9 @@ public class TCPThread extends Thread{
 		     writer.write(message+"\n");
 		     writer.flush();
 		     //System.out.println(this.chat);
-		     this.chat.displayMessage(this.current_user.getLogin(), message);
+		     Timestamp date = new Timestamp(System.currentTimeMillis());
+		     this.chat.displayMessage(receiver, message,date);
+		     this.session_tcp.getDatabase().appendHistory(this.current_user.getAddress().toString(), this.socket.getInetAddress().toString() , message);
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();	
@@ -88,9 +91,6 @@ public class TCPThread extends Thread{
        
     }
 	
-	public void afficher(String m){
-		this.chat.displayMessage("", m);
-	}
 	public ChatWindow getChat() {
 		return this.chat;
 	}
@@ -106,15 +106,17 @@ public class TCPThread extends Thread{
 						System.out.println("Received a nickname for ChatWindow config : " + message);
 						//message = name of the receiver
 						chat.setReceiver(message);
+						chat.retrieveHistory();
 						this.receiver = message;
 						this.waitforUser = false;
 					}
 					else {
 						System.out.println("message recu : " + message);
 						System.out.println(getChat());
-						chat.displayMessage(receiver, message);
+						Timestamp date = new Timestamp(System.currentTimeMillis());
+						this.chat.displayMessage(receiver, message,date);
 						System.out.println(this.current_user.getAddress().toString() instanceof String);
-						this.session_tcp.getDatabase().appendHistory(this.current_user.getAddress().toString(), this.socket.getInetAddress().toString() , message);
+						
 					}
 				}
 				//String messageReceived = reader.readLine();

@@ -28,6 +28,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import javax.swing.JTextArea;
@@ -79,9 +80,8 @@ public class ChatWindow {
 		frmChat.setTitle("Chat with " + receiver.getLogin());
 	}
 	
-	public void displayMessage(String whoSent,String m){
-		textArea.append(whoSent + ": " + m + "\n");
-		
+	public void displayMessage(String whoSent,String m, Timestamp date){
+		textArea.append(whoSent + " <"+ date.toString()+">" + ": " + m + "\n");
 	}
 	
 	public void retrieveHistory() {
@@ -90,7 +90,15 @@ public class ChatWindow {
 			ArrayList<Message> history = db.getHistory(sender.getAddress().toString(), receiver.getAddress().toString());
 			System.out.println("Retrieving previous messages...");
 			for (Message m : history) {
-				displayMessage(m.Get_Sender(),m.Get_Content());
+				//m.Get_sender renvoie une adresse ip en string (celle de l'envoyeur du message qu'on regarde)
+				//donc soit c'est l'adresse de celui avec qui on discute (this.sender)
+				if (m.Get_Sender().equals(this.sender.getAddress().toString())) {
+					displayMessage(this.sender.getLogin(),m.Get_Content(),m.Get_Timestamp());
+				}
+				//soit c'est celle de l'utilisateur de l'application (this.receiver)
+				else {
+					displayMessage(this.receiver.getLogin(),m.Get_Content(),m.Get_Timestamp());
+				}
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

@@ -217,8 +217,6 @@ public class UserInterface {
 		frame.getContentPane().add(lblMylogin);
 		this.connectedUsers = udp_session.getConnectedUsersName();
 		
-		//comboBox = new JComboBox(connectedUsers);
-		//comboBox.addItem("test");
 		comboBox = new JComboBox();
 		createComboBox(connectedUsers);
 		comboBox.addItemListener(new ItemListener() {
@@ -232,16 +230,16 @@ public class UserInterface {
 		                }
 		                else {
 		                	User receiver = udp_session.getUserConnected(receiverLogin);
-		                	ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
-		                //si le chat n'est pas déjà ouvert, on l'ouvre
-		                /*if (!chatStarted.containsKey(receiver)){
-		                    
-		                    chatStarted.put(receiver, chat);
-		                }// else {
-//		                    //s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
-//		                    frame.toBack();
-//		                    chatStarted.get(receiver).putInFront();
-//		                }*/
+		                	 //si le chat n'est pas déjà ouvert, on l'ouvre
+		                	if (!chatStarted.containsKey(receiver)){		         
+		                		
+		                		ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
+		                		chatStarted.put(receiver, chat);
+		                	}else {
+		                		//s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
+		                		frame.toBack();
+		                		chatStarted.get(receiver).putInFront();
+		                	}
 		                }
 			       }
 				
@@ -255,15 +253,7 @@ public class UserInterface {
 		JLabel lblStartAChat = new JLabel("Start a chat with");
 		lblStartAChat.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		lblStartAChat.setBounds(42, 136, 230, 45);
-		frame.getContentPane().add(lblStartAChat);
-		
-		//pour tester l'update de la liste d'user connectés
-		/*User x = new User("x");
-		UDPConnect udptest = new UDPConnect(x);
-		udptest.start();
-		udptest.sendMessageBroadcast("Connected," + x.getLogin() +","+x.getPort(), this.user.getPort());*/
-		//String[] data = udp_session.getConnectedUsersName();
-		
+		frame.getContentPane().add(lblStartAChat);						
 	}
 }
 
