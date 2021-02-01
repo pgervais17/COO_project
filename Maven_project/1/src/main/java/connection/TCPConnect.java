@@ -109,17 +109,6 @@ public class TCPConnect extends Thread{
     		}
     	}
     	thread.sendMessage(message);
-    	
-    	try {
-			this.db_message.appendHistory(receiver.getAddress().toString(),this.currentUser.getAddress().toString(), message);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
-		}
-
     }
     
     public TCPThread getTCPThreadWith(User u ){
@@ -138,7 +127,7 @@ public class TCPConnect extends Thread{
     	try {
     		server = new ServerSocket(port);
     		while(true){
-    			threads.add(new TCPThread(this,server.accept(), new ChatWindow(this.currentUser,this)));
+    			threads.add(new TCPThread(this,server.accept(), new ChatWindow(this.currentUser,this, this.userInterface)));
     			threads.get(threads.size()-1).start();
     		}
     	} catch (SocketException se) {

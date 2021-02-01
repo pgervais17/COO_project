@@ -50,17 +50,21 @@ public class ChatWindow {
 	private JTextArea textArea;
 	private TCPThread currentThread;
 	
-	public ChatWindow(User s, User r, TCPConnect user_tcp_session) {
+	private UserInterface ui;
+	
+	public ChatWindow(User s, User r, TCPConnect user_tcp_session, UserInterface u) {
 		setSender(s);
 		this.receiver = r;
 		this.tcp_session = user_tcp_session;
 		this.tcp_session.connectTo(receiver,this);
+		this.ui = u;
 		
 		initialize();
 	}
-	public ChatWindow(User s, TCPConnect user_tcp_session) {
+	public ChatWindow(User s, TCPConnect user_tcp_session, UserInterface u) {
 		setSender(s);
 		this.tcp_session = user_tcp_session;
+		this.ui = u;
 		initialize();
 	}
 
@@ -70,9 +74,14 @@ public class ChatWindow {
 			frmChat.toFront();
 			frmChat.setVisible(true);
 		}
-	
+	public void setUserInterface(UserInterface u) {
+		this.ui = u;
+	}
 	public void setSender(User u) {
 		sender = u;
+	}
+	public User getReceiver() {
+		return this.receiver;
 	}
 	public void setReceiver(String name) {
 		System.out.println("Tried to change ChatWindow title");
@@ -128,13 +137,14 @@ public class ChatWindow {
 		frmChat.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmChat.setVisible(true);
 		frmChat.getContentPane().setLayout(null);
-		
+		final ChatWindow chat = this;
 		this.windowAdapter = new WindowAdapter() {
 	        // WINDOW_CLOSING event handler
 	        @Override
 	        public void windowClosing(WindowEvent e) {
 	            super.windowClosing(e);
-	            tcp_session.closeThreadWith(receiver);                   
+	            tcp_session.closeThreadWith(receiver);
+	            ui.removeChatStarted(chat);
 	        }
 
 	        // WINDOW_CLOSED event handler

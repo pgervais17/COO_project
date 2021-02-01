@@ -81,13 +81,19 @@ public class TCPThread extends Thread{
 		     writer.flush();
 		     //System.out.println(this.chat);
 		     Timestamp date = new Timestamp(System.currentTimeMillis());
-		     this.chat.displayMessage(receiver, message,date);
-		     this.session_tcp.getDatabase().appendHistory(this.current_user.getAddress().toString(), this.socket.getInetAddress().toString() , message);
+		     this.chat.displayMessage(this.current_user.getLogin(), message,date);
+		     this.session_tcp.getDatabase().appendHistory( this.socket.getInetAddress().toString(),this.current_user.getAddress().toString(), message);
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();	
-		}
-			
+		
+	  } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
        
     }
 	
@@ -115,7 +121,6 @@ public class TCPThread extends Thread{
 						System.out.println(getChat());
 						Timestamp date = new Timestamp(System.currentTimeMillis());
 						this.chat.displayMessage(receiver, message,date);
-						System.out.println(this.current_user.getAddress().toString() instanceof String);
 						
 					}
 				}
@@ -131,14 +136,8 @@ public class TCPThread extends Thread{
     	  
       } catch (IOException e) {
     	  e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (SQLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-        
+    
+      } 
       
 }
 	public String getReceiver() {

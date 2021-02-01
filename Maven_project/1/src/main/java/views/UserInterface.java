@@ -112,6 +112,11 @@ public class UserInterface {
 		}
 		
 	}
+	
+	public void removeChatStarted(ChatWindow chat) {
+		this.chatStarted.remove(chat.getReceiver());
+		System.out.println(chat.getReceiver().getLogin() + " removed from current chats");
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -219,6 +224,7 @@ public class UserInterface {
 		
 		comboBox = new JComboBox();
 		createComboBox(connectedUsers);
+		final UserInterface ui = this;
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				 if (event.getStateChange() == ItemEvent.SELECTED) {
@@ -233,7 +239,7 @@ public class UserInterface {
 		                	 //si le chat n'est pas déjà ouvert, on l'ouvre
 		                	if (!chatStarted.containsKey(receiver)){		         
 		                		
-		                		ChatWindow chat = new ChatWindow(user,receiver,tcp_session);
+		                		ChatWindow chat = new ChatWindow(user,receiver,tcp_session,ui);
 		                		chatStarted.put(receiver, chat);
 		                	}else {
 		                		//s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
