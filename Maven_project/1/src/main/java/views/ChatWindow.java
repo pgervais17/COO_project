@@ -101,7 +101,11 @@ public class ChatWindow {
 			for (Message m : history) {
 				//m.Get_sender renvoie une adresse ip en string (celle de l'envoyeur du message qu'on regarde)
 				//donc soit c'est l'adresse de celui avec qui on discute (this.sender)
-				if (m.Get_Sender().equals(this.sender.getAddress().toString())) {
+				 //FORMATAGE
+			     String str = this.sender.getAddress().toString();
+			     String[] tokensVal = str.split("/");
+			     str = "/"+tokensVal[1];
+				if (m.Get_Sender().equals(str)) {
 					displayMessage(this.sender.getLogin(),m.Get_Content(),m.Get_Timestamp());
 				}
 				//soit c'est celle de l'utilisateur de l'application (this.receiver)

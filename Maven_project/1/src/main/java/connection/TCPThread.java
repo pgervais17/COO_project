@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.regex.Pattern;
 
 import models.User;
 import views.ChatWindow;
@@ -82,7 +83,13 @@ public class TCPThread extends Thread{
 		     //System.out.println(this.chat);
 		     Timestamp date = new Timestamp(System.currentTimeMillis());
 		     this.chat.displayMessage(this.current_user.getLogin(), message,date);
-		     this.session_tcp.getDatabase().appendHistory( this.socket.getInetAddress().toString(),this.current_user.getAddress().toString(), message);
+		     System.out.println( this.socket.getInetAddress().toString() + " et " + this.current_user.getAddress().toString());
+		     //FORMATAGE
+		     String str = this.current_user.getAddress().toString();
+		     String[] tokensVal = str.split("/");
+		     str = "/"+tokensVal[1];
+		     
+		     this.session_tcp.getDatabase().appendHistory( this.socket.getInetAddress().toString(),str, message);
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();	

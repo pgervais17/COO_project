@@ -5,4 +5,5 @@
     <fullyQualifiedTypeName name="com.google.protobuf.Message"/>
     <fullyQualifiedTypeName name="views.LoginWindow"/>
     <fullyQualifiedTypeName name="java.sql.Timestamp"/>
+    <fullyQualifiedTypeName name="java.util.regex.Pattern"/>
 </qualifiedTypeNameHistroy>
