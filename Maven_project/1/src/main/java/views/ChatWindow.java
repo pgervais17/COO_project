@@ -96,16 +96,21 @@ public class ChatWindow {
 	public void retrieveHistory() {
 		Database_Message db = this.tcp_session.getDatabase();
 		try {
-			ArrayList<Message> history = db.getHistory(sender.getAddress().toString(), receiver.getAddress().toString());
+			 //FORMATAGE
+		     String senderip = this.sender.getAddress().toString();
+		     String[] tokensVal = senderip.split("/");
+		     senderip = "/"+tokensVal[1];
+		     String receiverip = this.receiver.getAddress().toString();
+		     String[] tokensVal2 = receiverip.split("/");
+		     receiverip = "/"+tokensVal2[1];
+		     
+			ArrayList<Message> history = db.getHistory(senderip, receiverip);
 			System.out.println("Retrieving previous messages...");
 			for (Message m : history) {
 				//m.Get_sender renvoie une adresse ip en string (celle de l'envoyeur du message qu'on regarde)
 				//donc soit c'est l'adresse de celui avec qui on discute (this.sender)
-				 //FORMATAGE
-			     String str = this.sender.getAddress().toString();
-			     String[] tokensVal = str.split("/");
-			     str = "/"+tokensVal[1];
-				if (m.Get_Sender().equals(str)) {
+				
+				if (m.Get_Sender().equals(senderip)) {
 					displayMessage(this.sender.getLogin(),m.Get_Content(),m.Get_Timestamp());
 				}
 				//soit c'est celle de l'utilisateur de l'application (this.receiver)

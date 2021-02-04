@@ -85,11 +85,13 @@ public class TCPThread extends Thread{
 		     this.chat.displayMessage(this.current_user.getLogin(), message,date);
 		     System.out.println( this.socket.getInetAddress().toString() + " et " + this.current_user.getAddress().toString());
 		     //FORMATAGE
-		     String str = this.current_user.getAddress().toString();
-		     String[] tokensVal = str.split("/");
-		     str = "/"+tokensVal[1];
-		     
-		     this.session_tcp.getDatabase().appendHistory( this.socket.getInetAddress().toString(),str, message);
+		     String ip1 = this.current_user.getAddress().toString();
+		     String[] tokensVal = ip1.split("/");
+		     ip1 = "/"+tokensVal[1];
+		     String ip2 = this.socket.getInetAddress().toString();
+		     String[] tokensVal2 = ip2.split("/");
+		     ip2 = "/"+tokensVal2[1];
+		     this.session_tcp.getDatabase().appendHistory( ip2,ip1, message);
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();	
