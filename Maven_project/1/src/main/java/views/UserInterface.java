@@ -112,10 +112,20 @@ public class UserInterface {
 		}
 		
 	}
-	
+	public Boolean isChatStarted(String r) {
+		User u = this.udp_session.getUserByName(r);
+		return this.chatStarted.containsKey(u);
+	}
 	public void removeChatStarted(ChatWindow chat) {
 		this.chatStarted.remove(chat.getReceiver());
 		System.out.println(chat.getReceiver().getLogin() + " removed from current chats");
+	}
+	public void addChatStarted(ChatWindow chat) {
+		this.chatStarted.put(chat.getReceiver(),chat);
+		System.out.println(chat.getReceiver().getLogin() + " added to current chats");
+	}
+	public void popUpChangeLogin(String previousLogin,String newLogin) {
+		JOptionPane.showMessageDialog(null,"Info: the user " + previousLogin + " is now " + newLogin + " (login change)","Good",JOptionPane.INFORMATION_MESSAGE);
 	}
 	/**
 	 * Initialize the contents of the frame.

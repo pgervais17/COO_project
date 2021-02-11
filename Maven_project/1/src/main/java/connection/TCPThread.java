@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import models.User;
 import views.ChatWindow;
+import views.UserInterface;
 
 public class TCPThread extends Thread{
 	private Socket socket;
@@ -34,6 +35,8 @@ public class TCPThread extends Thread{
 	public TCPThread(TCPConnect tcp,Socket s,ChatWindow c) {
 		this.socket = s;
 		this.chat = c;
+		//cacher le chat jusqu'à vérification si il est déjà ouvert ou non
+		this.chat.hide();
 		this.waitforUser = true;
 		this.session_tcp = tcp;
 		this.current_user = this.session_tcp.getCurrentUser();
@@ -120,10 +123,17 @@ public class TCPThread extends Thread{
 					if (this.waitforUser) {
 						System.out.println("Received a nickname for ChatWindow config : " + message);
 						//message = name of the receiver
-						chat.setReceiver(message);
-						chat.retrieveHistory();
-						this.receiver = message;
-						this.waitforUser = false;
+						UserInterface ui = this.session_tcp.getUserInterface();
+						if(!ui.isChatStarted(message)) {
+							//le chat n'a pas déjà été lancé avant donc on peut le montrer
+							chat.setReceiver(message);
+							chat.retrieveHistory();
+							this.chat.show();
+							ui.addChatStarted(getChat());
+							this.receiver = message;
+							this.waitforUser = false;
+						}
+						
 					}
 					else {
 						System.out.println("message recu : " + message);

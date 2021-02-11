@@ -74,6 +74,12 @@ public class ChatWindow {
 			frmChat.toFront();
 			frmChat.setVisible(true);
 		}
+	public void hide() {
+		this.frmChat.setVisible(false);
+	}
+	public void show() {
+		this.frmChat.setVisible(true);
+	}
 	public void setUserInterface(UserInterface u) {
 		this.ui = u;
 	}

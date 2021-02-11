@@ -317,8 +317,7 @@ public class UDPConnect extends Thread {
                 		User u = getUserByName(previousLogin);
                 		u.setLogin(newLogin);
                 		
-                		//connectedUsers.remove(getUserByName(previousLogin));
-                		//connectedUsers.add(u);
+                		this.userInterface.popUpChangeLogin(previousLogin, newLogin);
                 		try {
                 			this.userInterface.updateListUsersAvailable();
                 		} catch (NullPointerException e){

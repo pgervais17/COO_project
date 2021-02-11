@@ -85,16 +85,16 @@ public class TCPConnect extends Thread{
 			s = new Socket(u.getAddress(),u.getPort());
 			threads.add(new TCPThread(this,s,chat,u.getLogin()));
 			threads.get(threads.size()-1).start();
-			Thread.sleep(2000);
+			//Thread.sleep(2000);
 			threads.get(threads.size()-1).sendNickname(this.login);
 			System.out.println("Connection between " + this.login + " and " + u.getLogin());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} /*catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
     	
     }
     
