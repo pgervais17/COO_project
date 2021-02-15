@@ -43,8 +43,6 @@ public class TCPConnect extends Thread{
 					t.close();
 				}
 				server.close();
-				
-				System.out.println("Session tcp closed");
 			} catch (SocketException se){
 				
 			} catch (NullPointerException nullexc) {
@@ -81,29 +79,20 @@ public class TCPConnect extends Thread{
     public void connectTo(User u,ChatWindow chat){
     	Socket s;
 		try {
-			System.out.println("Trying to start a tcp session with " + u.getLogin() + " on address " + u.getAddress().toString() + " on port " + u.getPort());
 			s = new Socket(u.getAddress(),u.getPort());
 			threads.add(new TCPThread(this,s,chat,u.getLogin()));
 			threads.get(threads.size()-1).start();
-			//Thread.sleep(2000);
 			threads.get(threads.size()-1).sendNickname(this.login);
-			System.out.println("Connection between " + this.login + " and " + u.getLogin());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} /*catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-    	
+		} 
     }
     
     public void sendMessage(String message, User receiver) {
     	TCPThread thread = null;
-    	System.out.println("Recherche du thread correspondant");
     	for (TCPThread t : threads) {
     		if (receiver.getLogin().equals(t.getReceiver())) {
-    			System.out.println("Thread trouvé");
     			//we found the good thread
     			thread = t;
     		}

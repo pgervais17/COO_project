@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 
 import models.User;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import connection.TCPConnect;
 import connection.TCPThread;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
@@ -57,6 +59,7 @@ public class ChatWindow {
 		this.receiver = r;
 		this.tcp_session = user_tcp_session;
 		this.tcp_session.connectTo(receiver,this);
+		this.currentThread = this.tcp_session.getTCPThreadWith(this.receiver);
 		this.ui = u;
 		
 		initialize();
@@ -80,6 +83,13 @@ public class ChatWindow {
 	public void show() {
 		this.frmChat.setVisible(true);
 	}
+	public void close() {
+		tcp_session.closeThreadWith(receiver);
+        ui.removeChatStarted(this);
+	}
+	public void setCurrentThread(TCPThread t) {
+		this.currentThread = t;
+	}
 	public void setUserInterface(UserInterface u) {
 		this.ui = u;
 	}
@@ -90,13 +100,17 @@ public class ChatWindow {
 		return this.receiver;
 	}
 	public void setReceiver(String name) {
-		System.out.println("Tried to change ChatWindow title");
 		this.receiver = tcp_session.getUserInterface().get_UDPsession().getUserByName(name);
 		frmChat.setTitle("Chat with " + receiver.getLogin());
 	}
 	
 	public void displayMessage(String whoSent,String m, Timestamp date){
 		textArea.append(whoSent + " <"+ date.toString()+">" + ": " + m + "\n");
+	}
+	//message to display when the distant user has disconnected
+	public void showPopUpDisconnectMessage() {
+		JOptionPane.showMessageDialog(null,this.receiver.getLogin()+ " has disconnected from the chat. Closing chat..","Good",JOptionPane.INFORMATION_MESSAGE);
+		this.hide();
 	}
 	
 	public void retrieveHistory() {
@@ -111,7 +125,6 @@ public class ChatWindow {
 		     receiverip = "/"+tokensVal2[1];
 		     
 			ArrayList<Message> history = db.getHistory(senderip, receiverip);
-			System.out.println("Retrieving previous messages...");
 			for (Message m : history) {
 				//m.Get_sender renvoie une adresse ip en string (celle de l'envoyeur du message qu'on regarde)
 				//donc soit c'est l'adresse de celui avec qui on discute (this.sender)
@@ -132,6 +145,11 @@ public class ChatWindow {
 		
 	}
 	
+	public void setChatTitle(String username) {
+		setReceiver(username);
+		this.currentThread.setReceiver(username);
+		frmChat.setTitle("Chat with " + receiver.getLogin());
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -189,12 +207,9 @@ public class ChatWindow {
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("On est entrés dans le send");
 				try {
 					if (message.length() > 0) {
-						System.out.println("Envoi du message " + message);
 						tcp_session.sendMessage(message, receiver);
-						System.out.println("Message envoyé");
 						textField.setText(null);
 						message = "";
 					}

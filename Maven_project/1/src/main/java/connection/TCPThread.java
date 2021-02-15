@@ -43,14 +43,14 @@ public class TCPThread extends Thread{
 		}
 	public void setCurrentChat(ChatWindow c) {
 		this.chat = c;
-		System.out.println("Chat set to " + c);
+	}
+	public void setReceiver(String s) {
+		this.receiver = s;
 	}
 	public void close(){
 		try {
 			this.socket.close();
-			System.out.println("Thread closed");
 		} catch (SocketException se){
-			System.out.println(""); 
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -86,7 +86,6 @@ public class TCPThread extends Thread{
 		     //System.out.println(this.chat);
 		     Timestamp date = new Timestamp(System.currentTimeMillis());
 		     this.chat.displayMessage(this.current_user.getLogin(), message,date);
-		     System.out.println( this.socket.getInetAddress().toString() + " et " + this.current_user.getAddress().toString());
 		     //FORMATAGE
 		     String ip1 = this.current_user.getAddress().toString();
 		     String[] tokensVal = ip1.split("/");
@@ -121,7 +120,6 @@ public class TCPThread extends Thread{
 				
 				if (!message.equals(null)) {
 					if (this.waitforUser) {
-						System.out.println("Received a nickname for ChatWindow config : " + message);
 						//message = name of the receiver
 						UserInterface ui = this.session_tcp.getUserInterface();
 						if(!ui.isChatStarted(message)) {
@@ -131,22 +129,18 @@ public class TCPThread extends Thread{
 							this.chat.show();
 							ui.addChatStarted(getChat());
 							this.receiver = message;
+							this.chat.setCurrentThread(this);
 							this.waitforUser = false;
 						}
 						
 					}
 					else {
-						System.out.println("message recu : " + message);
-						System.out.println(getChat());
 						Timestamp date = new Timestamp(System.currentTimeMillis());
 						this.chat.displayMessage(receiver, message,date);
 						
 					}
 				}
-				//String messageReceived = reader.readLine();
-				//chat.displayMessage(this.login,messageReceived);
-				
-             
+
 			}
          
       } catch (SocketException se) {

@@ -56,21 +56,7 @@ public class UserInterface {
 	private JComboBox comboBox;
 	private String newlogin = null;
 	private JLabel lblMylogin;
-	/**
-	 * Launch the application.
-	 */
-
-	/*public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UserInterface window = new UserInterface(user,udp_session);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
+	
 	/**
 	 * Create the application.
 	 */
@@ -79,7 +65,6 @@ public class UserInterface {
 		this.login = this.user.getLogin();
 		this.udp_session = session;
 		this.udp_session.setUserInterface(this);
-		System.out.println("user interface set to "  + this.udp_session.getUserInterface());
 		this.tcp_session = new TCPConnect(u,this);
 		this.tcp_session.start();
 
@@ -118,14 +103,26 @@ public class UserInterface {
 	}
 	public void removeChatStarted(ChatWindow chat) {
 		this.chatStarted.remove(chat.getReceiver());
-		System.out.println(chat.getReceiver().getLogin() + " removed from current chats");
 	}
 	public void addChatStarted(ChatWindow chat) {
 		this.chatStarted.put(chat.getReceiver(),chat);
-		System.out.println(chat.getReceiver().getLogin() + " added to current chats");
 	}
 	public void popUpChangeLogin(String previousLogin,String newLogin) {
 		JOptionPane.showMessageDialog(null,"Info: the user " + previousLogin + " is now " + newLogin + " (login change)","Good",JOptionPane.INFORMATION_MESSAGE);
+		User u = udp_session.getUserConnected(newLogin);
+		if (isChatStarted(u.getLogin())) {
+			this.chatStarted.get(u).setChatTitle(newLogin);;
+		} 
+	}
+	//methode utilisée pour avertir de la déconnexion d'un utilisateur si un chat est en cours avec
+	public void userDisconnected(String username) {
+		User u = udp_session.getUserConnected(username);
+		if (isChatStarted(u.getLogin())) {
+			this.chatStarted.get(u).showPopUpDisconnectMessage();
+			this.chatStarted.get(u).close();
+		} else {
+			JOptionPane.showMessageDialog(null,"User " + username + " has disconnected from the server.","Good",JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 	/**
 	 * Initialize the contents of the frame.
@@ -160,10 +157,6 @@ public class UserInterface {
 	        @Override
 	        public void windowClosed(WindowEvent e) {
 	            super.windowClosed(e);
-	            // Close application if you want to with System.exit(0)
-	            // but don't forget to dispose of all resources 
-	            // like child frames, threads, ...
-	            // System.exit(0);
 	        }
 	    };
 	    
@@ -192,7 +185,6 @@ public class UserInterface {
 		JButton btnNewButton = new JButton("Change");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("new login set to " + newlogin);
 				if (!newlogin.equals(null)){
 					udp_session.sendMessageBroadcast("VerifyNewLogin,"+login+","+user.getPort()+","+newlogin);
 					try {
@@ -214,7 +206,6 @@ public class UserInterface {
 						login = newlogin;
 						udp_session.setLogin(login);
 						JOptionPane.showMessageDialog(null,"Login changed! Your new login is: "+udp_session.getLogin(),"Good",JOptionPane.INFORMATION_MESSAGE);
-						System.out.println(user.getLogin());
 						lblMylogin.setText(login);
 					}
 				}		
@@ -238,11 +229,8 @@ public class UserInterface {
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				 if (event.getStateChange() == ItemEvent.SELECTED) {
-					 System.out.println("STARTING A CHAT WITH " + comboBox.getSelectedItem());
 		                String receiverLogin = comboBox.getSelectedItem().toString();
-		                System.out.println("selected value : " + receiverLogin);
 		                if (receiverLogin.equals("Select user")) {
-		                	System.out.println("cannot open chatbox, not a user");
 		                }
 		                else {
 		                	User receiver = udp_session.getUserConnected(receiverLogin);
@@ -250,7 +238,7 @@ public class UserInterface {
 		                	if (!chatStarted.containsKey(receiver)){		         
 		                		
 		                		ChatWindow chat = new ChatWindow(user,receiver,tcp_session,ui);
-		                		chatStarted.put(receiver, chat);
+		                		addChatStarted(chat);
 		                	}else {
 		                		//s'il est déjà ouvert mais minimisé, on le réaffiche en premier plan
 		                		frame.toBack();

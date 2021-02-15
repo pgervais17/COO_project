@@ -97,10 +97,8 @@ public class LoginWindow {
 				//car la première fois, on crée un user et une session udp, les autres fois il faut juste changer les logins
 				if (session_udp == null) {
 					create_new_user_session(login);
-					System.out.println("Une session a été créée pour l'utilisateur " + login + " (à vérifier)");
 				}
 				else {
-					System.out.println("Une session a déjà été créée mais a échoué, on change juste le login");
 					current_user.setLogin(login);
 					session_udp.setLogin(login);
 				}

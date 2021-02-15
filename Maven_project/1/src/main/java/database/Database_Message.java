@@ -53,7 +53,6 @@ public class Database_Message {
 
         while(rs.next()) {
         	message = new Message(rs.getString("sender"), rs.getString("receiver"), rs.getString("content"), rs.getTimestamp("timestamp")); 
-        	System.out.println(message);
         	history.add(message);
         }
     	
@@ -77,9 +76,7 @@ public class Database_Message {
         	content + "', '" +
         	timestamp +
         	"')"
-        );
-        
-        System.out.println("Ajout du message " + content + " à l'historique");
+        );  
         statement.close();
     }
 }
